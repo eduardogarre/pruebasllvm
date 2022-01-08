@@ -44,6 +44,11 @@ llvm::Value* creaSumaReales(llvm::Value* valor1, llvm::Value* valor2)
     return constructorLlvm.CreateFAdd(valor1, valor2);
 }
 
+llvm::Value* creaSuma(llvm::Value* valor1, llvm::Value* valor2)
+{
+    return constructorLlvm.CreateAdd(valor1, valor2);
+}
+
 llvm::Value* llamaFunción(llvm::Function* función, std::vector<llvm::Value*> argumentos)
 {
     return constructorLlvm.CreateCall(función, argumentos);
@@ -68,14 +73,19 @@ llvm::Function* defineFunción(std::string nombre)
 
     std::cout << "defineFunción() 1" << std::endl;
 
-    función = declaraFunción(nombre);
+    función = módulo->getFunction(nombre);
     
     std::cout << "defineFunción() 2" << std::endl;
 
     if(!función)
     {
-        std::cout << "Error: la función " << nombre << "() no está declarada." << std::endl;
-        return nullptr;
+        std::cout << "Aviso: la función " << nombre << "() no está declarada. La declaro ahora." << std::endl;
+        
+        función = declaraFunción("inicio");
+        if(!función)
+        {
+            std::cerr << "Error: la función " << nombre << "() no se ha podido declarar." << std::endl;
+        }
     }
 
     std::cout << "defineFunción() 3" << std::endl;
@@ -93,22 +103,23 @@ llvm::Function* defineFunción(std::string nombre)
     std::cout << "defineFunción() 5" << std::endl;
 
     constructorLlvm.SetInsertPoint(bloque);
+    
+    std::cout << "0" << std::endl;
+    llvm::Value* uno = creaLiteralEntero(40, 32);
+    std::cout << "1" << std::endl;
+    llvm::Value* dos = creaLiteralEntero(2, 32);
+    std::cout << "2" << std::endl;
+    llvm::Value* res = creaSuma(uno, dos);
+    std::cout << "3" << std::endl;
 
     std::cout << "defineFunción() 6" << std::endl;
 
-    constructorLlvm.CreateRet(creaLiteralEntero(42, 32));
+    constructorLlvm.CreateRet(res);
 
     std::cout << "defineFunción() 7" << std::endl;
 
-    try
-    {
-        llvm::verifyFunction(*función);
-    }
-    catch(...)
-    {
-        std::cout << "Me han lanzado una excepción rara" << std::endl;
-    }
-
+    llvm::verifyFunction(*función);
+    
     std::cout << "defineFunción() 8" << std::endl;
 
     return función;
@@ -120,7 +131,6 @@ int main(int argc, char** argv)
 
     módulo = std::make_unique<llvm::Module>("Mi JAT", contextoLlvm);
 
-/*
     std::cout << "0" << std::endl;
     llvm::Value* uno = creaLiteralReal(1.0);
     std::cout << "1" << std::endl;
@@ -131,7 +141,6 @@ int main(int argc, char** argv)
 
     llvm::Value* tres = creaLiteralEntero(51);
     std::cout << "4" << std::endl;
-*/
 
     llvm::Function* fnInicio = declaraFunción("inicio");
     std::cout << "5" << std::endl;
@@ -141,6 +150,8 @@ int main(int argc, char** argv)
     std::cout << "7" << std::endl;
     //argumentos.push_back(tres);
     std::cout << "8" << std::endl;
+
+    módulo->print(llvm::errs(), nullptr);
 
     return 0;
 }
