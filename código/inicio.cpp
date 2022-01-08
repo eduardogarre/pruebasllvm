@@ -9,6 +9,7 @@
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Verifier.h"
+#include "llvm/Support/TargetSelect.h"
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
@@ -19,10 +20,13 @@
 #include <string>
 #include <vector>
 
+#include "justoatiempo.hpp"
+
 static llvm::LLVMContext contextoLlvm;
 static llvm::IRBuilder<> constructorLlvm(contextoLlvm);
-static std::unique_ptr<llvm::Module> módulo;
+static std::unique_ptr<llvm::Module> móduloLlvm;
 static std::map<std::string, llvm::Value *> variables;
+static Ñ::ConstructorJAT* jat = nullptr;
 
 llvm::Type* creaTipoEntero(uint8_t dígitos)
 {
@@ -56,63 +60,128 @@ llvm::Value* llamaFunción(llvm::Function* función, std::vector<llvm::Value*> a
 
 llvm::Function* obténFunción(std::string nombre)
 {
-    return módulo->getFunction(nombre);
+    return móduloLlvm->getFunction(nombre);
 }
 
 llvm::Function* declaraFunción(std::string nombre)
 {
     std::vector<llvm::Type*> argumentos(0);
     llvm::FunctionType* firmaFunción = llvm::FunctionType::get(llvm::Type::getInt32Ty(contextoLlvm), argumentos, false);
-    llvm::Function* función = llvm::Function::Create(firmaFunción, llvm::Function::ExternalLinkage, nombre, módulo.get());
+    llvm::Function* función = llvm::Function::Create(firmaFunción, llvm::Function::ExternalLinkage, nombre, móduloLlvm.get());
     return función;
 }
 
 llvm::Function* defineFunción(std::string nombre)
 {
+    di("defineFunción 1");
+
     llvm::Function* función;
 
-    función = módulo->getFunction(nombre);
+    di("defineFunción 2");
+    
+    función = declaraFunción("inicio");
 
+    di("defineFunción 3");
+    
     if(!función)
     {
-        std::cout << "Aviso: la función " << nombre << "() no está declarada. La declaro ahora." << std::endl;
-        
-        función = declaraFunción("inicio");
-        if(!función)
-        {
-            std::cerr << "Error: la función " << nombre << "() no se ha podido declarar." << std::endl;
-        }
+        std::cerr << "Error: la función " << nombre << "() no se ha podido declarar." << std::endl;
     }
 
+    di("defineFunción 4");
+    
     if(!(función->empty()))
     {
         std::cout << "Error: la función " << nombre << "() ya está definida." << std::endl;
         return nullptr;
     }
 
+    di("defineFunción 5");
+    
     llvm::BasicBlock *bloque = llvm::BasicBlock::Create(contextoLlvm, "entrada", función);
 
+    di("defineFunción 6");
+    
     constructorLlvm.SetInsertPoint(bloque);
+    
+    di("defineFunción 7");
     
     llvm::Value* uno = creaLiteralEntero(40, 32);
     llvm::Value* dos = creaLiteralEntero(2, 32);
     llvm::Value* res = creaSuma(uno, dos);
 
+    di("defineFunción 8");
+    
     constructorLlvm.CreateRet(res);
 
+    di("defineFunción 9");
+    
     llvm::verifyFunction(*función);
 
+    di("defineFunción 10");
+    
     return función;
 }
 
 int main(int argc, char** argv)
 {
-    módulo = std::make_unique<llvm::Module>("Mi JAT", contextoLlvm);
+    di("0");
+        
+    llvm::InitializeNativeTarget();
+    llvm::InitializeNativeTargetAsmPrinter();
+    llvm::InitializeNativeTargetAsmParser();
+    
+    di("1");
+    
+    if(!jat)
+    {
+        jat = Ñ::ConstructorJAT::Crea();
 
-    llvm::Function* fnInicio = declaraFunción("inicio");
+        if(!jat)
+        {
+            di("Error al crear el constructor JAT");
+        }
+    }
+
+    di("2");
+
+    móduloLlvm = std::make_unique<llvm::Module>("moduloJAT", contextoLlvm);
+    
+    di("3");
+    
+    móduloLlvm->setDataLayout(jat->leeDisposiciónDatos());
+    
+    di("4");
+
     defineFunción("inicio");
 
-    módulo->print(llvm::errs(), nullptr);
+    di("5");
+
+    //llvm::Function* fnInicio = declaraFunción("inicio");
+    
+    di("6");
+    
+    jat->añadeMódulo(std::move(móduloLlvm));
+
+    di("7");
+
+    // Busco el símbolo "inicio" en el constructor JAT
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloInicio = jat->busca("inicio");
+
+    di("8");
+
+    int (*punteroFunción)() = (int (*)())(intptr_t)símboloInicio->getAddress();
+    
+    di("9");
+    
+    fprintf(stderr, "Evaluado a %d\n", punteroFunción());
+
+    di("10");
+
+    //móduloLlvm->print(llvm::errs(), nullptr);
+    jat->muestraSímbolos();
+
+    di("11");
 
     return 0;
 }
