@@ -156,8 +156,6 @@ int main(int argc, char** argv)
     defineFunción("inicio");
 
     di("5");
-
-    //llvm::Function* fnInicio = declaraFunción("inicio");
     
     di("6");
     
@@ -174,11 +172,10 @@ int main(int argc, char** argv)
     
     di("9");
     
-    fprintf(stderr, "Evaluado a %d\n", punteroFunción());
+    fprintf(stderr, "La función 'ent32 inicio()' ha devuelto '%d'\n\n", punteroFunción());
 
     di("10");
 
-    //móduloLlvm->print(llvm::errs(), nullptr);
     jat->muestraSímbolos();
 
     di("11");
