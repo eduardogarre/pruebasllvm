@@ -71,11 +71,7 @@ llvm::Function* defineFunción(std::string nombre)
 {
     llvm::Function* función;
 
-    std::cout << "defineFunción() 1" << std::endl;
-
     función = módulo->getFunction(nombre);
-    
-    std::cout << "defineFunción() 2" << std::endl;
 
     if(!función)
     {
@@ -88,68 +84,33 @@ llvm::Function* defineFunción(std::string nombre)
         }
     }
 
-    std::cout << "defineFunción() 3" << std::endl;
-
     if(!(función->empty()))
     {
         std::cout << "Error: la función " << nombre << "() ya está definida." << std::endl;
         return nullptr;
     }
 
-    std::cout << "defineFunción() 4" << std::endl;
-
     llvm::BasicBlock *bloque = llvm::BasicBlock::Create(contextoLlvm, "entrada", función);
-    
-    std::cout << "defineFunción() 5" << std::endl;
 
     constructorLlvm.SetInsertPoint(bloque);
     
-    std::cout << "0" << std::endl;
     llvm::Value* uno = creaLiteralEntero(40, 32);
-    std::cout << "1" << std::endl;
     llvm::Value* dos = creaLiteralEntero(2, 32);
-    std::cout << "2" << std::endl;
     llvm::Value* res = creaSuma(uno, dos);
-    std::cout << "3" << std::endl;
-
-    std::cout << "defineFunción() 6" << std::endl;
 
     constructorLlvm.CreateRet(res);
 
-    std::cout << "defineFunción() 7" << std::endl;
-
     llvm::verifyFunction(*función);
-    
-    std::cout << "defineFunción() 8" << std::endl;
 
     return función;
 }
 
 int main(int argc, char** argv)
 {
-    std::cout << "¡Hola, mundo!" << std::endl;
-
     módulo = std::make_unique<llvm::Module>("Mi JAT", contextoLlvm);
 
-    std::cout << "0" << std::endl;
-    llvm::Value* uno = creaLiteralReal(1.0);
-    std::cout << "1" << std::endl;
-    llvm::Value* dos = creaLiteralReal(2.0);
-    std::cout << "2" << std::endl;
-    llvm::Value* res = creaSumaReales(uno, dos);
-    std::cout << "3" << std::endl;
-
-    llvm::Value* tres = creaLiteralEntero(51);
-    std::cout << "4" << std::endl;
-
     llvm::Function* fnInicio = declaraFunción("inicio");
-    std::cout << "5" << std::endl;
     defineFunción("inicio");
-    std::cout << "6" << std::endl;
-    std::vector<llvm::Value*> argumentos;
-    std::cout << "7" << std::endl;
-    //argumentos.push_back(tres);
-    std::cout << "8" << std::endl;
 
     módulo->print(llvm::errs(), nullptr);
 
