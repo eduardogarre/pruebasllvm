@@ -1,0 +1,146 @@
+/*
+SPDX-License-Identifier: MPL-2.0-no-copyleft-exception
+
+This Source Code Form is subject to the terms of the Mozilla Public License, v.
+2.0. If a copy of the MPL was not distributed with this file, You can obtain one
+at http://mozilla.org/MPL/2.0/.
+
+This Source Code Form is "Incompatible With Secondary Licenses", as defined by
+the Mozilla Public License, v. 2.0.
+
+Copyright © 2021 Eduardo Garre Muñoz
+*/
+
+// Biblioteca estándar
+// Aleatorio
+externo ent aleatorio();
+externo ent saleatorio(ent semilla);
+// ES
+externo ent escribe(nat8* _texto);
+externo ent escribeln(nat8* _texto);
+// Proceso
+externo ent idprocesoactual();
+
+público nada prueba_bucle_mientras()
+{
+    nat8[] correcto = ".";
+    nat8[] error = "\nERROR bucle mientras\n";
+
+    nat8 testigo = 0;
+
+    // Prueba 1
+
+    testigo = 0;
+
+    mientras (falso)
+    {
+        testigo = testigo + 1;
+    }
+
+    si (testigo == 0)
+    {
+        escribe(correcto);
+    }
+    sino
+    {
+        escribe(error);
+    }
+
+    // Prueba 2
+
+    testigo = 0;
+
+    mientras (testigo < 3)
+    {
+        testigo = testigo + 1;
+    }
+
+    si (testigo == 3)
+    {
+        escribe(correcto);
+    }
+    sino
+    {
+        escribe(error);
+    }
+
+
+    // Prueba 3
+
+    testigo = 0;
+
+    mientras (testigo < 4)
+    {
+        testigo = testigo + 1;
+
+        si (testigo == 2)
+        {
+            para;
+        }
+    }
+
+    si (testigo == 2)
+    {
+        escribe(correcto);
+    }
+    sino
+    {
+        escribe(error);
+    }
+
+
+    // Prueba 4
+
+    testigo = 0;
+
+    mientras (testigo < 288)
+    {
+        testigo = testigo + 1;
+        
+        si (testigo == 42)
+        {
+            //devuelve testigo;
+            para;
+        }
+        
+        ent subtestigo = 0;
+
+        mientras (cierto)
+        {
+            subtestigo = subtestigo + 1;
+
+            si (subtestigo == 24)
+            {
+                para;
+            }
+
+            si (subtestigo > 24)
+            {
+                escribe(error);
+            }
+        }
+
+        si (subtestigo == 24)
+        {
+            escribe(correcto);
+            subtestigo = 0;
+        }
+        sino
+        {
+            escribe(error);
+            para;
+        }
+    }
+
+    si (testigo == 42)
+    {
+        escribe(correcto);
+    }
+    sino
+    {
+        escribe(error);
+    }
+
+    // Termina prueba
+    vuelve;
+}
