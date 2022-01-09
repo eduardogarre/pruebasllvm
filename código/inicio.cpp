@@ -156,6 +156,8 @@ int main(int argc, char** argv)
     defineFunción("inicio");
 
     di("5");
+
+    móduloLlvm->print(llvm::errs(), nullptr);
     
     di("6");
     
@@ -172,7 +174,7 @@ int main(int argc, char** argv)
     
     di("9");
     
-    fprintf(stderr, "La función 'ent32 inicio()' ha devuelto '%d'\n\n", punteroFunción());
+    fprintf(stderr, "\nLa función 'ent32 inicio()' ha devuelto '%d'\n\n", punteroFunción());
 
     di("10");
 
