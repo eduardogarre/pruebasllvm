@@ -161,23 +161,23 @@ int main(int argc, char** argv)
     int (*punteroFunción)() = (int (*)())(intptr_t)símboloInicio->getAddress();
 
     fprintf(stderr, ColorConsola.predefinido);
-    fprintf(stderr, "La función ");
+    fprintf(stderr, ">  ");
     fprintf(stderr, ColorConsola.predefinido);
-    fprintf(stderr, "'");
+    fprintf(stderr, "");
     fprintf(stderr, ColorConsola.cianclaro);
     fprintf(stderr, "i32");
     fprintf(stderr, ColorConsola.amarilloclaro);
     fprintf(stderr, " inicio");
     fprintf(stderr, ColorConsola.predefinido);
-    fprintf(stderr, "()'");
+    fprintf(stderr, "()");
     fprintf(stderr, ColorConsola.predefinido);
-    fprintf(stderr, " ha devuelto ");
+    fprintf(stderr, "\n");
     fprintf(stderr, ColorConsola.predefinido);
-    fprintf(stderr, "'");
+    fprintf(stderr, "⮩  ");
     fprintf(stderr, ColorConsola.amarilloclaro);
     fprintf(stderr, "%d", punteroFunción());
     fprintf(stderr, ColorConsola.predefinido);
-    fprintf(stderr, "'");
+    fprintf(stderr, "");
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\n\n");
 
