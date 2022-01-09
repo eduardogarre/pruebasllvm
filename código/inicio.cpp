@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 
+#include "consola.hpp"
 #include "justoatiempo.hpp"
 
 static llvm::LLVMContext contextoLlvm;
@@ -73,65 +74,46 @@ llvm::Function* declaraFunción(std::string nombre)
 
 llvm::Function* defineFunción(std::string nombre)
 {
-    di("defineFunción 1");
-
     llvm::Function* función;
-
-    di("defineFunción 2");
-    
     función = declaraFunción("inicio");
 
-    di("defineFunción 3");
-    
     if(!función)
     {
         std::cerr << "Error: la función " << nombre << "() no se ha podido declarar." << std::endl;
     }
 
-    di("defineFunción 4");
-    
     if(!(función->empty()))
     {
         std::cout << "Error: la función " << nombre << "() ya está definida." << std::endl;
         return nullptr;
     }
 
-    di("defineFunción 5");
-    
     llvm::BasicBlock *bloque = llvm::BasicBlock::Create(contextoLlvm, "entrada", función);
 
-    di("defineFunción 6");
-    
+    // Abro el cuerpo de la función
     constructorLlvm.SetInsertPoint(bloque);
-    
-    di("defineFunción 7");
+    // INSERTA CÓDIGO A PARTIR DE AQUÍ
     
     llvm::Value* uno = creaLiteralEntero(40, 32);
     llvm::Value* dos = creaLiteralEntero(2, 32);
     llvm::Value* res = creaSuma(uno, dos);
 
-    di("defineFunción 8");
-    
+    // La función debe terminar con una instrucción de retorno
     constructorLlvm.CreateRet(res);
-
-    di("defineFunción 9");
     
-    llvm::verifyFunction(*función);
+    // NO INSERTES MÁS CÓDIGO
+    // Cierro el cuerpo de la función
 
-    di("defineFunción 10");
+    llvm::verifyFunction(*función);
     
     return función;
 }
 
 int main(int argc, char** argv)
-{
-    di("0");
-        
+{       
     llvm::InitializeNativeTarget();
     llvm::InitializeNativeTargetAsmPrinter();
     llvm::InitializeNativeTargetAsmParser();
-    
-    di("1");
     
     if(!jat)
     {
@@ -143,44 +125,61 @@ int main(int argc, char** argv)
         }
     }
 
-    di("2");
-
     móduloLlvm = std::make_unique<llvm::Module>("moduloJAT", contextoLlvm);
     
-    di("3");
-    
     móduloLlvm->setDataLayout(jat->leeDisposiciónDatos());
-    
-    di("4");
 
     defineFunción("inicio");
 
-    di("5");
+    di(ColorConsola.cianclaro);
+    di("-------------------------");
+    di("REPRESENTACIÓN INTERMEDIA");
+    di("-------------------------");
+    di(ColorConsola.predefinido);
 
     móduloLlvm->print(llvm::errs(), nullptr);
-    
-    di("6");
+
+    di(ColorConsola.cianclaro);
+    di("-------------------------");
+    di("- CONTENIDOS DEL MÓDULO -");
+    di("-------------------------");
+    di(ColorConsola.predefinido);
     
     jat->añadeMódulo(std::move(móduloLlvm));
 
-    di("7");
+    jat->muestraSímbolos();
+
+    di(ColorConsola.cianclaro);
+    di("-------------------------");
+    di("------- RESULTADO -------");
+    di("-------------------------");
+    di(ColorConsola.predefinido);
 
     // Busco el símbolo "inicio" en el constructor JAT
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloInicio = jat->busca("inicio");
 
-    di("8");
-
     int (*punteroFunción)() = (int (*)())(intptr_t)símboloInicio->getAddress();
-    
-    di("9");
-    
-    fprintf(stderr, "\nLa función 'ent32 inicio()' ha devuelto '%d'\n\n", punteroFunción());
 
-    di("10");
-
-    jat->muestraSímbolos();
-
-    di("11");
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "La función ");
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "'");
+    fprintf(stderr, ColorConsola.cianclaro);
+    fprintf(stderr, "i32");
+    fprintf(stderr, ColorConsola.amarilloclaro);
+    fprintf(stderr, " inicio");
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "()'");
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, " ha devuelto ");
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "'");
+    fprintf(stderr, ColorConsola.amarilloclaro);
+    fprintf(stderr, "%d", punteroFunción());
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "'");
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "\n\n");
 
     return 0;
 }

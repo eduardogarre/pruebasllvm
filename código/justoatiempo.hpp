@@ -36,7 +36,7 @@ Copyright © 2021 Eduardo Garre Muñoz
 
 void di(std::string texto)
 {
-    //std::cout << texto << std::endl;
+    std::cout << texto << std::endl;
 }
 
 namespace Ñ
