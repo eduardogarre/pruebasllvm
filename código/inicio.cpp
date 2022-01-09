@@ -132,17 +132,17 @@ int main(int argc, char** argv)
     defineFunción("inicio");
 
     di(ColorConsola.cianclaro);
-    di("-------------------------");
-    di("REPRESENTACIÓN INTERMEDIA");
-    di("-------------------------");
+    di("-------------------------------");
+    di("|  REPRESENTACIÓN INTERMEDIA  |");
+    di("-------------------------------");
     di(ColorConsola.predefinido);
 
     móduloLlvm->print(llvm::errs(), nullptr);
 
     di(ColorConsola.cianclaro);
-    di("-------------------------");
-    di("- CONTENIDOS DEL MÓDULO -");
-    di("-------------------------");
+    di("-------------------------------");
+    di("|    CONTENIDOS DEL MÓDULO    |");
+    di("-------------------------------");
     di(ColorConsola.predefinido);
     
     jat->añadeMódulo(std::move(móduloLlvm));
@@ -150,9 +150,9 @@ int main(int argc, char** argv)
     jat->muestraSímbolos();
 
     di(ColorConsola.cianclaro);
-    di("-------------------------");
-    di("------- RESULTADO -------");
-    di("-------------------------");
+    di("-------------------------------");
+    di("|          RESULTADO          |");
+    di("-------------------------------");
     di(ColorConsola.predefinido);
 
     // Busco el símbolo "inicio" en el constructor JAT
