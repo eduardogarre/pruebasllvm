@@ -72,6 +72,13 @@ llvm::Function* declaraFunción(std::string nombre)
     return función;
 }
 
+llvm::Value* sumaEnteros(int32_t val1, int32_t val2)
+{
+    llvm::Value* uno = creaLiteralEntero(val1, 32);
+    llvm::Value* dos = creaLiteralEntero(val2, 32);
+    return creaSuma(uno, dos);
+}
+
 llvm::Function* defineFunción(std::string nombre)
 {
     llvm::Function* función;
@@ -92,16 +99,21 @@ llvm::Function* defineFunción(std::string nombre)
 
     // Abro el cuerpo de la función
     constructorLlvm.SetInsertPoint(bloque);
-    // INSERTA CÓDIGO A PARTIR DE AQUÍ
+
+    /////////////////////////////////////
+    // INSERTA CÓDIGO A PARTIR DE AQUÍ //
+    /////////////////////////////////////
     
-    llvm::Value* uno = creaLiteralEntero(40, 32);
-    llvm::Value* dos = creaLiteralEntero(2, 32);
-    llvm::Value* res = creaSuma(uno, dos);
+    // SUMA DE ENTEROS
+    llvm::Value* res = sumaEnteros(40, 2);
+
+    ////////////////////////////
+    // NO INSERTES MÁS CÓDIGO //
+    ////////////////////////////
 
     // La función debe terminar con una instrucción de retorno
     constructorLlvm.CreateRet(res);
     
-    // NO INSERTES MÁS CÓDIGO
     // Cierro el cuerpo de la función
 
     llvm::verifyFunction(*función);
