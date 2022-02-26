@@ -49,7 +49,7 @@ llvm::Value* creaSumaReales(llvm::Value* valor1, llvm::Value* valor2)
     return constructorLlvm.CreateFAdd(valor1, valor2);
 }
 
-llvm::Value* creaSuma(llvm::Value* valor1, llvm::Value* valor2)
+llvm::Value* creaSumaEnteros(llvm::Value* valor1, llvm::Value* valor2)
 {
     return constructorLlvm.CreateAdd(valor1, valor2);
 }
@@ -76,7 +76,7 @@ llvm::Value* sumaEnteros(int32_t val1, int32_t val2)
 {
     llvm::Value* uno = creaLiteralEntero(val1, 32);
     llvm::Value* dos = creaLiteralEntero(val2, 32);
-    return creaSuma(uno, dos);
+    return creaSumaEnteros(uno, dos);
 }
 
 llvm::Function* defineFunción(std::string nombre)
