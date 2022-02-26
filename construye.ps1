@@ -18,10 +18,18 @@ rm -ErrorAction SilentlyContinue *.exe
 mkdir obra
 mkdir proyecto
 
+$crono = [system.diagnostics.stopwatch]::startNew()
+
 cd obra
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build . --parallel 4
 cd ..
+
+$crono.Stop()
+
+echo [33m
+echo "Milisegundos empleados:" $crono.Elapsed.TotalMilliseconds
+echo [0m
 
 rm build -Force -Recurse -ErrorAction SilentlyContinue
 rm obra -Force -Recurse -ErrorAction SilentlyContinue
