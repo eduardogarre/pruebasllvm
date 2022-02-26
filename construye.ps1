@@ -28,7 +28,7 @@ cd ..
 $crono.Stop()
 
 echo [33m
-echo "Milisegundos empleados:" $crono.Elapsed.TotalMilliseconds
+echo "Segundos empleados:" $crono.Elapsed.TotalSeconds
 echo [0m
 
 rm build -Force -Recurse -ErrorAction SilentlyContinue
