@@ -49,6 +49,11 @@ llvm::Value* creaSumaReales(llvm::Value* valor1, llvm::Value* valor2)
     return constructorLlvm.CreateFAdd(valor1, valor2);
 }
 
+llvm::Value* creaRestaReales(llvm::Value* valor1, llvm::Value* valor2)
+{
+    return constructorLlvm.CreateFSub(valor1, valor2);
+}
+
 llvm::Value* creaSumaEnteros(llvm::Value* valor1, llvm::Value* valor2)
 {
     return constructorLlvm.CreateAdd(valor1, valor2);
@@ -140,6 +145,13 @@ llvm::Value* sumaReales(double val1, double val2)
     return creaSumaReales(uno, dos);
 }
 
+llvm::Value* restaReales(double val1, double val2)
+{
+    llvm::Value* uno = creaLiteralReal(val1);
+    llvm::Value* dos = creaLiteralReal(val2);
+    return creaRestaReales(uno, dos);
+}
+
 template <typename T> llvm::Function* defineFunción(std::string nombre)
 {
     llvm::Function* función;
@@ -197,16 +209,21 @@ int main(int argc, char** argv)
     auto fnSumaEnteros = defineFunción<int32_t>("sumaEnteros");
     llvm::Value* resultadoSumaEnteros = sumaEnteros(40, 2);
     cierraFunción(fnSumaEnteros, resultadoSumaEnteros);
+    
+    // SUMA DE REALES
+    auto fnSumaReales = defineFunción<double>("sumaReales");
+    llvm::Value* resultadoSumaReales = sumaReales(40.0, 2.0);
+    cierraFunción(fnSumaReales, resultadoSumaReales);
 
     // RESTA DE ENTEROS
     auto fnRestaEnteros = defineFunción<int32_t>("restaEnteros");
     llvm::Value* resultadoRestaEnteros = restaEnteros(44, 2);
     cierraFunción(fnRestaEnteros, resultadoRestaEnteros);
     
-    // SUMA DE REALES
-    auto fnSumaReales = defineFunción<double>("sumaReales");
-    llvm::Value* resultadoSumaReales = sumaReales(40.0, 2.0);
-    cierraFunción(fnSumaReales, resultadoSumaReales);
+    // RESTA DE REALES
+    auto fnRestaReales = defineFunción<double>("restaReales");
+    llvm::Value* resultadoRestaReales = restaReales(44.0, 2.0);
+    cierraFunción(fnRestaReales, resultadoRestaReales);
 
     di(ColorConsola.cianclaro);
     di("-------------------------------");
@@ -234,12 +251,14 @@ int main(int argc, char** argv)
 
     // Busco los símbolos en el constructor JAT
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaEnteros = jat->busca("sumaEnteros");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaEnteros = jat->busca("restaEnteros");
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaReales = jat->busca("sumaReales");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaEnteros = jat->busca("restaEnteros");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaReales = jat->busca("restaReales");
 
     int32_t (*pSumaEnteros)() = (int32_t (*)()) ((intptr_t)(símboloSumaEnteros->getAddress()));
-    int32_t (*pRestaEnteros)() = (int32_t (*)()) ((intptr_t)(símboloRestaEnteros->getAddress()));
     double (*pSumaReales)() = (double (*)()) ((intptr_t)(símboloSumaReales->getAddress()));
+    int32_t (*pRestaEnteros)() = (int32_t (*)()) ((intptr_t)(símboloRestaEnteros->getAddress()));
+    double (*pRestaReales)() = (double (*)()) ((intptr_t)(símboloRestaReales->getAddress()));
 
     fprintf(stderr, ColorConsola.cianclaro);
     fprintf(stderr, "sumaEnteros()");
@@ -247,6 +266,15 @@ int main(int argc, char** argv)
     fprintf(stderr, "\t▶   ");
     fprintf(stderr, ColorConsola.amarilloclaro);
     fprintf(stderr, "%d", pSumaEnteros());
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "\n");
+
+    fprintf(stderr, ColorConsola.cianclaro);
+    fprintf(stderr, "sumaReales()");
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "\t▶   ");
+    fprintf(stderr, ColorConsola.amarilloclaro);
+    fprintf(stderr, "%f", pSumaReales());
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\n");
 
@@ -260,11 +288,11 @@ int main(int argc, char** argv)
     fprintf(stderr, "\n");
 
     fprintf(stderr, ColorConsola.cianclaro);
-    fprintf(stderr, "sumaReales()");
+    fprintf(stderr, "restaReales()");
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\t▶   ");
     fprintf(stderr, ColorConsola.amarilloclaro);
-    fprintf(stderr, "%f", pSumaReales());
+    fprintf(stderr, "%f", pRestaReales());
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\n");
 
