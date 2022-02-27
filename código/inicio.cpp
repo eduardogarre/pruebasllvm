@@ -82,7 +82,7 @@ llvm::Value* sumaEnteros(int32_t val1, int32_t val2)
 llvm::Function* defineFunción(std::string nombre)
 {
     llvm::Function* función;
-    función = declaraFunción("inicio");
+    función = declaraFunción(nombre);
 
     if(!función)
     {
@@ -99,26 +99,17 @@ llvm::Function* defineFunción(std::string nombre)
 
     // Abro el cuerpo de la función
     constructorLlvm.SetInsertPoint(bloque);
-
-    /////////////////////////////////////
-    // INSERTA CÓDIGO A PARTIR DE AQUÍ //
-    /////////////////////////////////////
-    
-    // SUMA DE ENTEROS
-    llvm::Value* res = sumaEnteros(40, 2);
-
-    ////////////////////////////
-    // NO INSERTES MÁS CÓDIGO //
-    ////////////////////////////
-
-    // La función debe terminar con una instrucción de retorno
-    constructorLlvm.CreateRet(res);
-    
-    // Cierro el cuerpo de la función
-
-    llvm::verifyFunction(*función);
     
     return función;
+}
+
+void cierraFunción(llvm::Function* función, llvm::Value* resultado)
+{
+    // La función debe terminar con una instrucción de retorno
+    constructorLlvm.CreateRet(resultado);
+    
+    // Cierro el cuerpo de la función
+    llvm::verifyFunction(*función);
 }
 
 int main(int argc, char** argv)
@@ -141,7 +132,12 @@ int main(int argc, char** argv)
     
     móduloLlvm->setDataLayout(jat->leeDisposiciónDatos());
 
-    defineFunción("inicio");
+    auto fnSumaEnteros = defineFunción("sumaEnteros");
+
+    // SUMA DE ENTEROS
+    llvm::Value* resultado = sumaEnteros(40, 2);
+
+    cierraFunción(fnSumaEnteros, resultado);
 
     di(ColorConsola.cianclaro);
     di("-------------------------------");
@@ -167,29 +163,17 @@ int main(int argc, char** argv)
     di("-------------------------------");
     di(ColorConsola.predefinido);
 
-    // Busco el símbolo "inicio" en el constructor JAT
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloInicio = jat->busca("inicio");
+    // Busco el símbolo "sumaEnteros" en el constructor JAT
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaEnteros = jat->busca("sumaEnteros");
 
-    int (*punteroFunción)() = (int (*)())(intptr_t)símboloInicio->getAddress();
+    int (*pSumaEnteros)() = (int (*)())(intptr_t)símboloSumaEnteros->getAddress();
 
-    fprintf(stderr, ColorConsola.predefinido);
-    fprintf(stderr, "▶  ");
-    fprintf(stderr, ColorConsola.predefinido);
-    fprintf(stderr, "");
     fprintf(stderr, ColorConsola.cianclaro);
-    fprintf(stderr, "i32");
+    fprintf(stderr, "sumaEnteros()");
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, " ▶  ");
     fprintf(stderr, ColorConsola.amarilloclaro);
-    fprintf(stderr, " inicio");
-    fprintf(stderr, ColorConsola.predefinido);
-    fprintf(stderr, "()");
-    fprintf(stderr, ColorConsola.predefinido);
-    fprintf(stderr, "\n");
-    fprintf(stderr, ColorConsola.predefinido);
-    fprintf(stderr, " ⤷ ");
-    fprintf(stderr, ColorConsola.amarilloclaro);
-    fprintf(stderr, "%d", punteroFunción());
-    fprintf(stderr, ColorConsola.predefinido);
-    fprintf(stderr, "");
+    fprintf(stderr, "%d", pSumaEnteros());
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\n\n");
 
