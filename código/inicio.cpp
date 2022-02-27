@@ -206,22 +206,22 @@ int main(int argc, char** argv)
     móduloLlvm->setDataLayout(jat->leeDisposiciónDatos());
 
     // SUMA DE ENTEROS
-    auto fnSumaEnteros = defineFunción<int32_t>("sumaEnteros");
+    auto fnSumaEnteros = defineFunción<int32_t>("sumaLiteralesEnteros");
     llvm::Value* resultadoSumaEnteros = sumaEnteros(40, 2);
     cierraFunción(fnSumaEnteros, resultadoSumaEnteros);
     
     // SUMA DE REALES
-    auto fnSumaReales = defineFunción<double>("sumaReales");
+    auto fnSumaReales = defineFunción<double>("sumaLiteralesReales");
     llvm::Value* resultadoSumaReales = sumaReales(40.0, 2.0);
     cierraFunción(fnSumaReales, resultadoSumaReales);
 
     // RESTA DE ENTEROS
-    auto fnRestaEnteros = defineFunción<int32_t>("restaEnteros");
+    auto fnRestaEnteros = defineFunción<int32_t>("restaLiteralesEnteros");
     llvm::Value* resultadoRestaEnteros = restaEnteros(44, 2);
     cierraFunción(fnRestaEnteros, resultadoRestaEnteros);
     
     // RESTA DE REALES
-    auto fnRestaReales = defineFunción<double>("restaReales");
+    auto fnRestaReales = defineFunción<double>("restaLiteralesReales");
     llvm::Value* resultadoRestaReales = restaReales(44.0, 2.0);
     cierraFunción(fnRestaReales, resultadoRestaReales);
 
@@ -250,49 +250,49 @@ int main(int argc, char** argv)
     di(ColorConsola.predefinido);
 
     // Busco los símbolos en el constructor JAT
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaEnteros = jat->busca("sumaEnteros");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaReales = jat->busca("sumaReales");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaEnteros = jat->busca("restaEnteros");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaReales = jat->busca("restaReales");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaLiteralesEnteros = jat->busca("sumaLiteralesEnteros");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaLiteralesReales = jat->busca("sumaLiteralesReales");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaLiteralesEnteros = jat->busca("restaLiteralesEnteros");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaLiteralesReales = jat->busca("restaLiteralesReales");
 
-    int32_t (*pSumaEnteros)() = (int32_t (*)()) ((intptr_t)(símboloSumaEnteros->getAddress()));
-    double (*pSumaReales)() = (double (*)()) ((intptr_t)(símboloSumaReales->getAddress()));
-    int32_t (*pRestaEnteros)() = (int32_t (*)()) ((intptr_t)(símboloRestaEnteros->getAddress()));
-    double (*pRestaReales)() = (double (*)()) ((intptr_t)(símboloRestaReales->getAddress()));
+    int32_t (*pSumaLiteralesEnteros)() = (int32_t (*)()) ((intptr_t)(símboloSumaLiteralesEnteros->getAddress()));
+    double (*pSumaLiteralesReales)() = (double (*)()) ((intptr_t)(símboloSumaLiteralesReales->getAddress()));
+    int32_t (*pRestaLiteralesEnteros)() = (int32_t (*)()) ((intptr_t)(símboloRestaLiteralesEnteros->getAddress()));
+    double (*pRestaLiteralesReales)() = (double (*)()) ((intptr_t)(símboloRestaLiteralesReales->getAddress()));
 
     fprintf(stderr, ColorConsola.cianclaro);
-    fprintf(stderr, "sumaEnteros()");
+    fprintf(stderr, "sumaLiteralesEnteros()");
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\t▶   ");
     fprintf(stderr, ColorConsola.amarilloclaro);
-    fprintf(stderr, "%d", pSumaEnteros());
+    fprintf(stderr, "%d", pSumaLiteralesEnteros());
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\n");
 
     fprintf(stderr, ColorConsola.cianclaro);
-    fprintf(stderr, "sumaReales()");
+    fprintf(stderr, "sumaLiteralesReales()");
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\t▶   ");
     fprintf(stderr, ColorConsola.amarilloclaro);
-    fprintf(stderr, "%f", pSumaReales());
+    fprintf(stderr, "%f", pSumaLiteralesReales());
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\n");
 
     fprintf(stderr, ColorConsola.cianclaro);
-    fprintf(stderr, "restaEnteros()");
+    fprintf(stderr, "restaLiteralesEnteros()");
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\t▶   ");
     fprintf(stderr, ColorConsola.amarilloclaro);
-    fprintf(stderr, "%d", pRestaEnteros());
+    fprintf(stderr, "%d", pRestaLiteralesEnteros());
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\n");
 
     fprintf(stderr, ColorConsola.cianclaro);
-    fprintf(stderr, "restaReales()");
+    fprintf(stderr, "restaLiteralesReales()");
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\t▶   ");
     fprintf(stderr, ColorConsola.amarilloclaro);
-    fprintf(stderr, "%f", pRestaReales());
+    fprintf(stderr, "%f", pRestaLiteralesReales());
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\n");
 
