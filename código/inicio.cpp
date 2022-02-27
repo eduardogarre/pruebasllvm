@@ -64,10 +64,52 @@ llvm::Function* obténFunción(std::string nombre)
     return móduloLlvm->getFunction(nombre);
 }
 
-llvm::Function* declaraFunción(std::string nombre)
+template <typename T> llvm::Function* declaraFunción(std::string nombre) { /* Sin implementación */ }
+
+template <> llvm::Function* declaraFunción<int8_t>(std::string nombre)
+{
+    std::vector<llvm::Type*> argumentos(0);
+    llvm::FunctionType* firmaFunción = llvm::FunctionType::get(llvm::Type::getInt8Ty(contextoLlvm), argumentos, false);
+    llvm::Function* función = llvm::Function::Create(firmaFunción, llvm::Function::ExternalLinkage, nombre, móduloLlvm.get());
+    return función;
+}
+
+template <> llvm::Function* declaraFunción<int16_t>(std::string nombre)
+{
+    std::vector<llvm::Type*> argumentos(0);
+    llvm::FunctionType* firmaFunción = llvm::FunctionType::get(llvm::Type::getInt16Ty(contextoLlvm), argumentos, false);
+    llvm::Function* función = llvm::Function::Create(firmaFunción, llvm::Function::ExternalLinkage, nombre, móduloLlvm.get());
+    return función;
+}
+
+template <> llvm::Function* declaraFunción<int32_t>(std::string nombre)
 {
     std::vector<llvm::Type*> argumentos(0);
     llvm::FunctionType* firmaFunción = llvm::FunctionType::get(llvm::Type::getInt32Ty(contextoLlvm), argumentos, false);
+    llvm::Function* función = llvm::Function::Create(firmaFunción, llvm::Function::ExternalLinkage, nombre, móduloLlvm.get());
+    return función;
+}
+
+template <> llvm::Function* declaraFunción<int64_t>(std::string nombre)
+{
+    std::vector<llvm::Type*> argumentos(0);
+    llvm::FunctionType* firmaFunción = llvm::FunctionType::get(llvm::Type::getInt64Ty(contextoLlvm), argumentos, false);
+    llvm::Function* función = llvm::Function::Create(firmaFunción, llvm::Function::ExternalLinkage, nombre, móduloLlvm.get());
+    return función;
+}
+
+template <> llvm::Function* declaraFunción<float>(std::string nombre)
+{
+    std::vector<llvm::Type*> argumentos(0);
+    llvm::FunctionType* firmaFunción = llvm::FunctionType::get(llvm::Type::getFloatTy(contextoLlvm), argumentos, false);
+    llvm::Function* función = llvm::Function::Create(firmaFunción, llvm::Function::ExternalLinkage, nombre, móduloLlvm.get());
+    return función;
+}
+
+template <> llvm::Function* declaraFunción<double>(std::string nombre)
+{
+    std::vector<llvm::Type*> argumentos(0);
+    llvm::FunctionType* firmaFunción = llvm::FunctionType::get(llvm::Type::getDoubleTy(contextoLlvm), argumentos, false);
     llvm::Function* función = llvm::Function::Create(firmaFunción, llvm::Function::ExternalLinkage, nombre, móduloLlvm.get());
     return función;
 }
@@ -79,10 +121,17 @@ llvm::Value* sumaEnteros(int32_t val1, int32_t val2)
     return creaSumaEnteros(uno, dos);
 }
 
-llvm::Function* defineFunción(std::string nombre)
+llvm::Value* sumaReales(double val1, double val2)
+{
+    llvm::Value* uno = creaLiteralReal(val1);
+    llvm::Value* dos = creaLiteralReal(val2);
+    return creaSumaReales(uno, dos);
+}
+
+template <typename T> llvm::Function* defineFunción(std::string nombre)
 {
     llvm::Function* función;
-    función = declaraFunción(nombre);
+    función = declaraFunción<T>(nombre);
 
     if(!función)
     {
@@ -132,12 +181,15 @@ int main(int argc, char** argv)
     
     móduloLlvm->setDataLayout(jat->leeDisposiciónDatos());
 
-    auto fnSumaEnteros = defineFunción("sumaEnteros");
-
     // SUMA DE ENTEROS
-    llvm::Value* resultado = sumaEnteros(40, 2);
-
-    cierraFunción(fnSumaEnteros, resultado);
+    //auto fnSumaEnteros = defineFunción<int32_t>("sumaEnteros");
+    //llvm::Value* resultadoSumaEnteros = sumaEnteros(40, 2);
+    //cierraFunción(fnSumaEnteros, resultadoSumaEnteros);
+    
+    // SUMA DE REALES
+    auto fnSumaReales = defineFunción<double>("sumaReales");
+    llvm::Value* resultadoSumaReales = sumaReales(1.0, 2.0);
+    cierraFunción(fnSumaReales, resultadoSumaReales);
 
     di(ColorConsola.cianclaro);
     di("-------------------------------");
@@ -163,17 +215,28 @@ int main(int argc, char** argv)
     di("-------------------------------");
     di(ColorConsola.predefinido);
 
-    // Busco el símbolo "sumaEnteros" en el constructor JAT
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaEnteros = jat->busca("sumaEnteros");
+    // Busco los símbolos en el constructor JAT
+    //llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaEnteros = jat->busca("sumaEnteros");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaReales = jat->busca("sumaReales");
 
-    int (*pSumaEnteros)() = (int (*)())(intptr_t)símboloSumaEnteros->getAddress();
+    //int32_t (*pSumaEnteros)() = (int32_t (*)()) ((intptr_t)(símboloSumaEnteros->getAddress()));
+    double (*pSumaReales)() = (double (*)()) ((intptr_t)(símboloSumaReales->getAddress()));
+
+    //fprintf(stderr, ColorConsola.cianclaro);
+    //fprintf(stderr, "sumaEnteros()");
+    //fprintf(stderr, ColorConsola.predefinido);
+    //fprintf(stderr, "\t▶   ");
+    //fprintf(stderr, ColorConsola.amarilloclaro);
+    //fprintf(stderr, "%d", pSumaEnteros());
+    //fprintf(stderr, ColorConsola.predefinido);
+    //fprintf(stderr, "\n\n");
 
     fprintf(stderr, ColorConsola.cianclaro);
-    fprintf(stderr, "sumaEnteros()");
+    fprintf(stderr, "sumaReales()");
     fprintf(stderr, ColorConsola.predefinido);
-    fprintf(stderr, " ▶  ");
+    fprintf(stderr, "\t▶   ");
     fprintf(stderr, ColorConsola.amarilloclaro);
-    fprintf(stderr, "%d", pSumaEnteros());
+    fprintf(stderr, "%f", pSumaReales());
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\n\n");
 
