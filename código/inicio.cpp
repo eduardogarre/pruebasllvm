@@ -54,6 +54,11 @@ llvm::Value* creaSumaEnteros(llvm::Value* valor1, llvm::Value* valor2)
     return constructorLlvm.CreateAdd(valor1, valor2);
 }
 
+llvm::Value* creaRestaEnteros(llvm::Value* valor1, llvm::Value* valor2)
+{
+    return constructorLlvm.CreateSub(valor1, valor2);
+}
+
 llvm::Value* llamaFunción(llvm::Function* función, std::vector<llvm::Value*> argumentos)
 {
     return constructorLlvm.CreateCall(función, argumentos);
@@ -121,6 +126,13 @@ llvm::Value* sumaEnteros(int32_t val1, int32_t val2)
     return creaSumaEnteros(uno, dos);
 }
 
+llvm::Value* restaEnteros(int32_t val1, int32_t val2)
+{
+    llvm::Value* uno = creaLiteralEntero(val1, 32);
+    llvm::Value* dos = creaLiteralEntero(val2, 32);
+    return creaRestaEnteros(uno, dos);
+}
+
 llvm::Value* sumaReales(double val1, double val2)
 {
     llvm::Value* uno = creaLiteralReal(val1);
@@ -185,6 +197,11 @@ int main(int argc, char** argv)
     auto fnSumaEnteros = defineFunción<int32_t>("sumaEnteros");
     llvm::Value* resultadoSumaEnteros = sumaEnteros(40, 2);
     cierraFunción(fnSumaEnteros, resultadoSumaEnteros);
+
+    // RESTA DE ENTEROS
+    auto fnRestaEnteros = defineFunción<int32_t>("restaEnteros");
+    llvm::Value* resultadoRestaEnteros = restaEnteros(44, 2);
+    cierraFunción(fnRestaEnteros, resultadoRestaEnteros);
     
     // SUMA DE REALES
     auto fnSumaReales = defineFunción<double>("sumaReales");
@@ -217,9 +234,11 @@ int main(int argc, char** argv)
 
     // Busco los símbolos en el constructor JAT
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaEnteros = jat->busca("sumaEnteros");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaEnteros = jat->busca("restaEnteros");
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaReales = jat->busca("sumaReales");
 
     int32_t (*pSumaEnteros)() = (int32_t (*)()) ((intptr_t)(símboloSumaEnteros->getAddress()));
+    int32_t (*pRestaEnteros)() = (int32_t (*)()) ((intptr_t)(símboloRestaEnteros->getAddress()));
     double (*pSumaReales)() = (double (*)()) ((intptr_t)(símboloSumaReales->getAddress()));
 
     fprintf(stderr, ColorConsola.cianclaro);
@@ -228,6 +247,15 @@ int main(int argc, char** argv)
     fprintf(stderr, "\t▶   ");
     fprintf(stderr, ColorConsola.amarilloclaro);
     fprintf(stderr, "%d", pSumaEnteros());
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "\n");
+
+    fprintf(stderr, ColorConsola.cianclaro);
+    fprintf(stderr, "restaEnteros()");
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "\t▶   ");
+    fprintf(stderr, ColorConsola.amarilloclaro);
+    fprintf(stderr, "%d", pRestaEnteros());
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\n");
 
