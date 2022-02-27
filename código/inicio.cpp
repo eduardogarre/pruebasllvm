@@ -205,22 +205,22 @@ int main(int argc, char** argv)
     
     móduloLlvm->setDataLayout(jat->leeDisposiciónDatos());
 
-    // SUMA DE ENTEROS
+    // SUMA DE LITERALES ENTEROS
     auto fnSumaEnteros = defineFunción<int32_t>("sumaLiteralesEnteros");
     llvm::Value* resultadoSumaEnteros = sumaEnteros(40, 2);
     cierraFunción(fnSumaEnteros, resultadoSumaEnteros);
     
-    // SUMA DE REALES
+    // SUMA DE LITERALES REALES
     auto fnSumaReales = defineFunción<double>("sumaLiteralesReales");
     llvm::Value* resultadoSumaReales = sumaReales(40.0, 2.0);
     cierraFunción(fnSumaReales, resultadoSumaReales);
 
-    // RESTA DE ENTEROS
+    // RESTA DE LITERALES ENTEROS
     auto fnRestaEnteros = defineFunción<int32_t>("restaLiteralesEnteros");
     llvm::Value* resultadoRestaEnteros = restaEnteros(44, 2);
     cierraFunción(fnRestaEnteros, resultadoRestaEnteros);
     
-    // RESTA DE REALES
+    // RESTA DE LITERALES REALES
     auto fnRestaReales = defineFunción<double>("restaLiteralesReales");
     llvm::Value* resultadoRestaReales = restaReales(44.0, 2.0);
     cierraFunción(fnRestaReales, resultadoRestaReales);
