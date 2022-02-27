@@ -51,6 +51,7 @@ namespace Ñ
         llvm::orc::MangleAndInterner traduceSímbolos;
         llvm::orc::ThreadSafeContext contexto;
         llvm::orc::ThreadSafeModule móduloMultihilo;
+        llvm::Triple tripleta;
         llvm::orc::JITDylib &tablaSímbolosPrincipal;
 
     public:
@@ -60,6 +61,7 @@ namespace Ñ
             ) :
                 sesiónEjecución(std::move(controlEjecutorDelProceso)),
                 capaObjeto(sesiónEjecución, []() { return std::make_unique<llvm::SectionMemoryManager>(); }),
+                tripleta(constructorJATMáquinaDestino.getTargetTriple()),
                 capaConstrucción(sesiónEjecución, capaObjeto, std::make_unique<llvm::orc::ConcurrentIRCompiler>(std::move(constructorJATMáquinaDestino))),
                 disposiciónDatos(std::move(disposiciónDatos)),
                 traduceSímbolos(sesiónEjecución, this->disposiciónDatos),
@@ -67,7 +69,12 @@ namespace Ñ
                 tablaSímbolosPrincipal(this->sesiónEjecución.createBareJITDylib("<main>"))
         {
             // Por el momento, en Windows el gestor de COFF, RuntimeDyldCOFF, no informa correctamente del estado de los símbolos
-            capaObjeto.setOverrideObjectFlagsWithResponsibilityFlags(true);
+            if(tripleta.isOSBinFormatCOFF())
+            {
+                capaObjeto.setAutoClaimResponsibilityForObjectSymbols(true);
+                capaObjeto.setOverrideObjectFlagsWithResponsibilityFlags(true);
+            }
+
             llvm::orc::JITDylib* jitdylib = sesiónEjecución.getJITDylibByName("<main>");
 
             if(jitdylib)

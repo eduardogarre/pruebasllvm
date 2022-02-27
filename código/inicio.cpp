@@ -182,13 +182,13 @@ int main(int argc, char** argv)
     móduloLlvm->setDataLayout(jat->leeDisposiciónDatos());
 
     // SUMA DE ENTEROS
-    //auto fnSumaEnteros = defineFunción<int32_t>("sumaEnteros");
-    //llvm::Value* resultadoSumaEnteros = sumaEnteros(40, 2);
-    //cierraFunción(fnSumaEnteros, resultadoSumaEnteros);
+    auto fnSumaEnteros = defineFunción<int32_t>("sumaEnteros");
+    llvm::Value* resultadoSumaEnteros = sumaEnteros(40, 2);
+    cierraFunción(fnSumaEnteros, resultadoSumaEnteros);
     
     // SUMA DE REALES
     auto fnSumaReales = defineFunción<double>("sumaReales");
-    llvm::Value* resultadoSumaReales = sumaReales(1.0, 2.0);
+    llvm::Value* resultadoSumaReales = sumaReales(40.0, 2.0);
     cierraFunción(fnSumaReales, resultadoSumaReales);
 
     di(ColorConsola.cianclaro);
@@ -216,20 +216,20 @@ int main(int argc, char** argv)
     di(ColorConsola.predefinido);
 
     // Busco los símbolos en el constructor JAT
-    //llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaEnteros = jat->busca("sumaEnteros");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaEnteros = jat->busca("sumaEnteros");
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaReales = jat->busca("sumaReales");
 
-    //int32_t (*pSumaEnteros)() = (int32_t (*)()) ((intptr_t)(símboloSumaEnteros->getAddress()));
+    int32_t (*pSumaEnteros)() = (int32_t (*)()) ((intptr_t)(símboloSumaEnteros->getAddress()));
     double (*pSumaReales)() = (double (*)()) ((intptr_t)(símboloSumaReales->getAddress()));
 
-    //fprintf(stderr, ColorConsola.cianclaro);
-    //fprintf(stderr, "sumaEnteros()");
-    //fprintf(stderr, ColorConsola.predefinido);
-    //fprintf(stderr, "\t▶   ");
-    //fprintf(stderr, ColorConsola.amarilloclaro);
-    //fprintf(stderr, "%d", pSumaEnteros());
-    //fprintf(stderr, ColorConsola.predefinido);
-    //fprintf(stderr, "\n\n");
+    fprintf(stderr, ColorConsola.cianclaro);
+    fprintf(stderr, "sumaEnteros()");
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "\t▶   ");
+    fprintf(stderr, ColorConsola.amarilloclaro);
+    fprintf(stderr, "%d", pSumaEnteros());
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "\n");
 
     fprintf(stderr, ColorConsola.cianclaro);
     fprintf(stderr, "sumaReales()");
@@ -238,7 +238,7 @@ int main(int argc, char** argv)
     fprintf(stderr, ColorConsola.amarilloclaro);
     fprintf(stderr, "%f", pSumaReales());
     fprintf(stderr, ColorConsola.predefinido);
-    fprintf(stderr, "\n\n");
+    fprintf(stderr, "\n");
 
     return 0;
 }
