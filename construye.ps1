@@ -27,10 +27,6 @@ cd ..
 
 $crono.Stop()
 
-echo [33m
-echo "Segundos empleados:" $crono.Elapsed.TotalSeconds
-echo [0m
-
 rm build -Force -Recurse -ErrorAction SilentlyContinue
 rm obra -Force -Recurse -ErrorAction SilentlyContinue
 
@@ -41,3 +37,9 @@ echo "EJECUTANDO: './proyecto/pruebasllvm.exe' ..."
 echo [0m
 
 ./proyecto/pruebasllvm.exe
+
+$tConstrucción = $crono.Elapsed.TotalSeconds
+
+echo [33m
+echo "Duración de la construcción: $tConstrucción segundos"
+echo [0m
