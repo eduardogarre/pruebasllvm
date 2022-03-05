@@ -21,9 +21,10 @@
 #include <vector>
 
 #include "consola.hpp"
-#include "declaraFunción.hpp"
+#include "función.hpp"
 #include "justoatiempo.hpp"
 #include "literal.hpp"
+#include "soporte.hpp"
 #include "tipo.hpp"
 
 
@@ -34,65 +35,32 @@ std::map<std::string, llvm::Value *> variables;
 Ñ::ConstructorJAT* jat = nullptr;
 
 
-llvm::Value* creaSumaReales(llvm::Value* valor1, llvm::Value* valor2)
-{
-    return constructorLlvm.CreateFAdd(valor1, valor2);
-}
-
-llvm::Value* creaRestaReales(llvm::Value* valor1, llvm::Value* valor2)
-{
-    return constructorLlvm.CreateFSub(valor1, valor2);
-}
-
-llvm::Value* creaSumaEnteros(llvm::Value* valor1, llvm::Value* valor2)
-{
-    return constructorLlvm.CreateAdd(valor1, valor2);
-}
-
-llvm::Value* creaRestaEnteros(llvm::Value* valor1, llvm::Value* valor2)
-{
-    return constructorLlvm.CreateSub(valor1, valor2);
-}
-
-
-llvm::Value* llamaFunción(llvm::Function* función, std::vector<llvm::Value*> argumentos)
-{
-    return constructorLlvm.CreateCall(función, argumentos);
-}
-
-llvm::Function* obténFunción(std::string nombre)
-{
-    return móduloLlvm->getFunction(nombre);
-}
-
-
-
 llvm::Value* sumaEnteros(int32_t val1, int32_t val2)
 {
     llvm::Value* uno = creaLiteral<int32_t>(val1);
     llvm::Value* dos = creaLiteral<int32_t>(val2);
-    return creaSumaEnteros(uno, dos);
+    return constructorLlvm.CreateAdd(uno, dos);
 }
 
 llvm::Value* restaEnteros(int32_t val1, int32_t val2)
 {
     llvm::Value* uno = creaLiteral<int32_t>(val1);
     llvm::Value* dos = creaLiteral<int32_t>(val2);
-    return creaRestaEnteros(uno, dos);
+    return constructorLlvm.CreateSub(uno, dos);
 }
 
 llvm::Value* sumaReales(double val1, double val2)
 {
-    llvm::Value* uno = creaLiteral<double>(val1);
-    llvm::Value* dos = creaLiteral<double>(val2);
-    return creaSumaReales(uno, dos);
+    llvm::Value* valor1 = creaLiteral<double>(val1);
+    llvm::Value* valor2 = creaLiteral<double>(val2);
+    return constructorLlvm.CreateFAdd(valor1, valor2);
 }
 
 llvm::Value* restaReales(double val1, double val2)
 {
     llvm::Value* uno = creaLiteral<double>(val1);
     llvm::Value* dos = creaLiteral<double>(val2);
-    return creaRestaReales(uno, dos);
+    return constructorLlvm.CreateFSub(uno, dos);
 }
 
 llvm::Value* creaVariable(llvm::Type* tipo, std::string nombre)
@@ -110,38 +78,6 @@ llvm::Value* leeVariable(llvm::Value* variable)
     return constructorLlvm.CreateLoad(variable);
 }
 
-template <typename T> llvm::Function* defineFunción(std::string nombre)
-{
-    llvm::Function* función;
-    función = declaraFunción<T>(nombre);
-
-    if(!función)
-    {
-        std::cerr << "Error: la función " << nombre << "() no se ha podido declarar." << std::endl;
-    }
-
-    if(!(función->empty()))
-    {
-        std::cout << "Error: la función " << nombre << "() ya está definida." << std::endl;
-        return nullptr;
-    }
-
-    llvm::BasicBlock *bloque = llvm::BasicBlock::Create(contextoLlvm, "entrada", función);
-
-    // Abro el cuerpo de la función
-    constructorLlvm.SetInsertPoint(bloque);
-    
-    return función;
-}
-
-void cierraFunción(llvm::Function* función, llvm::Value* resultado)
-{
-    // La función debe terminar con una instrucción de retorno
-    constructorLlvm.CreateRet(resultado);
-    
-    // Cierro el cuerpo de la función
-    llvm::verifyFunction(*función);
-}
 
 int main(int argc, char** argv)
 {       
@@ -211,7 +147,7 @@ int main(int argc, char** argv)
         ponEnVariable(variable2, creaLiteral<int32_t>(38));
         llvm::Value* var1 = leeVariable(variable1);
         llvm::Value* var2 = leeVariable(variable2);
-        llvm::Value* resultado = creaSumaEnteros(var1, var2);
+        llvm::Value* resultado = constructorLlvm.CreateAdd(var1, var2);
         cierraFunción(función, resultado);
     }
 
@@ -223,7 +159,7 @@ int main(int argc, char** argv)
         ponEnVariable(variable2, creaLiteral<double>(1.75));
         llvm::Value* var1 = leeVariable(variable1);
         llvm::Value* var2 = leeVariable(variable2);
-        llvm::Value* resultado = creaSumaReales(var1, var2);
+        llvm::Value* resultado = constructorLlvm.CreateFAdd(var1, var2);
         cierraFunción(función, resultado);
     }
 
@@ -235,7 +171,7 @@ int main(int argc, char** argv)
         ponEnVariable(variable2, creaLiteral<int32_t>(6));
         llvm::Value* var1 = leeVariable(variable1);
         llvm::Value* var2 = leeVariable(variable2);
-        llvm::Value* resultado = creaRestaEnteros(var1, var2);
+        llvm::Value* resultado = constructorLlvm.CreateSub(var1, var2);
         cierraFunción(función, resultado);
     }
 
@@ -247,7 +183,7 @@ int main(int argc, char** argv)
         ponEnVariable(variable2, creaLiteral<double>(4.5));
         llvm::Value* var1 = leeVariable(variable1);
         llvm::Value* var2 = leeVariable(variable2);
-        llvm::Value* resultado = creaRestaReales(var1, var2);
+        llvm::Value* resultado = constructorLlvm.CreateFSub(var1, var2);
         cierraFunción(función, resultado);
     }
 

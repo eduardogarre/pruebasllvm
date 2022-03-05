@@ -34,10 +34,7 @@ Copyright © 2021 Eduardo Garre Muñoz
 #include <iostream>
 #include <memory>
 
-void di(std::string texto)
-{
-    std::cout << texto << std::endl;
-}
+#include "soporte.hpp"
 
 namespace Ñ
 {
