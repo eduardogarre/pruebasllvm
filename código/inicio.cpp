@@ -29,25 +29,130 @@ static std::unique_ptr<llvm::Module> móduloLlvm;
 static std::map<std::string, llvm::Value *> variables;
 static Ñ::ConstructorJAT* jat = nullptr;
 
-llvm::Type* creaTipoEntero(uint8_t dígitos)
+
+
+template <typename T> llvm::Type* creaTipo() { /* Sin implementación */ }
+
+template <> llvm::Type* creaTipo<bool>()
 {
-    return llvm::Type::getIntNTy(contextoLlvm, dígitos);
+    return llvm::Type::getInt1Ty(contextoLlvm);
 }
 
-llvm::Value* creaLiteralReal(double valor)
+template <> llvm::Type* creaTipo<int8_t>()
+{
+    return llvm::Type::getInt8Ty(contextoLlvm);
+}
+
+template <> llvm::Type* creaTipo<uint8_t>()
+{
+    return llvm::Type::getInt8Ty(contextoLlvm);
+}
+
+template <> llvm::Type* creaTipo<int16_t>()
+{
+    return llvm::Type::getInt16Ty(contextoLlvm);
+}
+
+template <> llvm::Type* creaTipo<uint16_t>()
+{
+    return llvm::Type::getInt16Ty(contextoLlvm);
+}
+
+template <> llvm::Type* creaTipo<int32_t>()
+{
+    return llvm::Type::getInt32Ty(contextoLlvm);
+}
+
+template <> llvm::Type* creaTipo<uint32_t>()
+{
+    return llvm::Type::getInt32Ty(contextoLlvm);
+}
+
+template <> llvm::Type* creaTipo<int64_t>()
+{
+    return llvm::Type::getInt64Ty(contextoLlvm);
+}
+
+template <> llvm::Type* creaTipo<uint64_t>()
+{
+    return llvm::Type::getInt64Ty(contextoLlvm);
+}
+
+template <> llvm::Type* creaTipo<float>()
+{
+    return llvm::Type::getFloatTy(contextoLlvm);
+}
+
+template <> llvm::Type* creaTipo<double>()
+{
+    return llvm::Type::getDoubleTy(contextoLlvm);
+}
+
+
+
+template <typename T> llvm::Value* creaLiteral(T valor) { /* Sin implementación */ }
+
+template <> llvm::Value* creaLiteral<float>(float valor)
 {
     return llvm::ConstantFP::get(contextoLlvm, llvm::APFloat(valor));
 }
 
-llvm::Value* creaLiteralEntero(uint64_t valor, uint8_t dígitos = 64)
+template <> llvm::Value* creaLiteral<double>(double valor)
 {
-    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(dígitos, valor));
+    return llvm::ConstantFP::get(contextoLlvm, llvm::APFloat(valor));
+}
+
+template <> llvm::Value* creaLiteral<bool>(bool valor)
+{
+    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(1, valor));
+}
+
+template <> llvm::Value* creaLiteral<int8_t>(int8_t valor)
+{
+    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(8, valor));
+}
+
+template <> llvm::Value* creaLiteral<uint8_t>(uint8_t valor)
+{
+    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(8, valor));
+}
+
+template <> llvm::Value* creaLiteral<int16_t>(int16_t valor)
+{
+    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(16, valor));
+}
+
+template <> llvm::Value* creaLiteral<uint16_t>(uint16_t valor)
+{
+    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(16, valor));
+}
+
+template <> llvm::Value* creaLiteral<int32_t>(int32_t valor)
+{
+    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(32, valor));
+}
+
+template <> llvm::Value* creaLiteral<uint32_t>(uint32_t valor)
+{
+    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(32, valor));
+}
+
+template <> llvm::Value* creaLiteral<int64_t>(int64_t valor)
+{
+    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(64, valor));
+}
+
+template <> llvm::Value* creaLiteral<uint64_t>(uint64_t valor)
+{
+    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(64, valor));
 }
 
 llvm::Value* creaSumaReales(llvm::Value* valor1, llvm::Value* valor2)
 {
     return constructorLlvm.CreateFAdd(valor1, valor2);
 }
+
+
 
 llvm::Value* creaRestaReales(llvm::Value* valor1, llvm::Value* valor2)
 {
@@ -73,6 +178,9 @@ llvm::Function* obténFunción(std::string nombre)
 {
     return móduloLlvm->getFunction(nombre);
 }
+
+
+
 
 template <typename T> llvm::Function* declaraFunción(std::string nombre) { /* Sin implementación */ }
 
@@ -126,30 +234,45 @@ template <> llvm::Function* declaraFunción<double>(std::string nombre)
 
 llvm::Value* sumaEnteros(int32_t val1, int32_t val2)
 {
-    llvm::Value* uno = creaLiteralEntero(val1, 32);
-    llvm::Value* dos = creaLiteralEntero(val2, 32);
+    llvm::Value* uno = creaLiteral<int32_t>(val1);
+    llvm::Value* dos = creaLiteral<int32_t>(val2);
     return creaSumaEnteros(uno, dos);
 }
 
 llvm::Value* restaEnteros(int32_t val1, int32_t val2)
 {
-    llvm::Value* uno = creaLiteralEntero(val1, 32);
-    llvm::Value* dos = creaLiteralEntero(val2, 32);
+    llvm::Value* uno = creaLiteral<int32_t>(val1);
+    llvm::Value* dos = creaLiteral<int32_t>(val2);
     return creaRestaEnteros(uno, dos);
 }
 
 llvm::Value* sumaReales(double val1, double val2)
 {
-    llvm::Value* uno = creaLiteralReal(val1);
-    llvm::Value* dos = creaLiteralReal(val2);
+    llvm::Value* uno = creaLiteral<double>(val1);
+    llvm::Value* dos = creaLiteral<double>(val2);
     return creaSumaReales(uno, dos);
 }
 
 llvm::Value* restaReales(double val1, double val2)
 {
-    llvm::Value* uno = creaLiteralReal(val1);
-    llvm::Value* dos = creaLiteralReal(val2);
+    llvm::Value* uno = creaLiteral<double>(val1);
+    llvm::Value* dos = creaLiteral<double>(val2);
     return creaRestaReales(uno, dos);
+}
+
+llvm::Value* creaVariable(llvm::Type* tipo, std::string nombre)
+{
+    return constructorLlvm.CreateAlloca(tipo, nullptr, nombre);
+}
+
+void ponEnVariable(llvm::Value* variable, llvm::Value* valor)
+{
+    constructorLlvm.CreateStore(valor, variable, false);
+}
+
+llvm::Value* leeVariable(llvm::Value* variable)
+{
+    return constructorLlvm.CreateLoad(variable);
 }
 
 template <typename T> llvm::Function* defineFunción(std::string nombre)
@@ -225,6 +348,16 @@ int main(int argc, char** argv)
     llvm::Value* resultadoRestaReales = restaReales(44.0, 2.0);
     cierraFunción(fnRestaReales, resultadoRestaReales);
 
+    // CREA, PON Y LEE VARIABLE ENTERA
+    auto fnVariableEntera = defineFunción<int32_t>("variableEntera");
+    llvm::Type* tipoEnt32 = creaTipo<int32_t>();
+    llvm::Value* variableEntera1 = creaVariable(tipoEnt32, "variable1");
+    llvm::Value* valor42 = creaLiteral<int32_t>(42);
+    ponEnVariable(variableEntera1, valor42);
+    llvm::Value* resultadoVariableEntera = leeVariable(variableEntera1);
+    cierraFunción(fnVariableEntera, resultadoVariableEntera);
+
+
     di(ColorConsola.cianclaro);
     di("-------------------------------");
     di("|  REPRESENTACIÓN INTERMEDIA  |");
@@ -254,11 +387,13 @@ int main(int argc, char** argv)
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaLiteralesReales = jat->busca("sumaLiteralesReales");
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaLiteralesEnteros = jat->busca("restaLiteralesEnteros");
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaLiteralesReales = jat->busca("restaLiteralesReales");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloVariableEntera = jat->busca("variableEntera");
 
     int32_t (*pSumaLiteralesEnteros)() = (int32_t (*)()) ((intptr_t)(símboloSumaLiteralesEnteros->getAddress()));
     double (*pSumaLiteralesReales)() = (double (*)()) ((intptr_t)(símboloSumaLiteralesReales->getAddress()));
     int32_t (*pRestaLiteralesEnteros)() = (int32_t (*)()) ((intptr_t)(símboloRestaLiteralesEnteros->getAddress()));
     double (*pRestaLiteralesReales)() = (double (*)()) ((intptr_t)(símboloRestaLiteralesReales->getAddress()));
+    int32_t (*pVariableEntera)() = (int32_t (*)()) ((intptr_t)(símboloVariableEntera->getAddress()));
 
     fprintf(stderr, ColorConsola.cianclaro);
     fprintf(stderr, "sumaLiteralesEnteros()");
@@ -293,6 +428,15 @@ int main(int argc, char** argv)
     fprintf(stderr, "\t▶   ");
     fprintf(stderr, ColorConsola.amarilloclaro);
     fprintf(stderr, "%f", pRestaLiteralesReales());
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "\n");
+
+    fprintf(stderr, ColorConsola.cianclaro);
+    fprintf(stderr, "variableEntera()");
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "\t▶   ");
+    fprintf(stderr, ColorConsola.amarilloclaro);
+    fprintf(stderr, "%d", pVariableEntera());
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\n");
 
