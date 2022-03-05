@@ -21,79 +21,23 @@
 #include <vector>
 
 #include "consola.hpp"
+#include "declaraFunción.hpp"
 #include "justoatiempo.hpp"
+#include "literal.hpp"
 #include "tipo.hpp"
 
+
 llvm::LLVMContext contextoLlvm;
-static llvm::IRBuilder<> constructorLlvm(contextoLlvm);
-static std::unique_ptr<llvm::Module> móduloLlvm;
-static std::map<std::string, llvm::Value *> variables;
-static Ñ::ConstructorJAT* jat = nullptr;
+llvm::IRBuilder<> constructorLlvm(contextoLlvm);
+std::unique_ptr<llvm::Module> móduloLlvm;
+std::map<std::string, llvm::Value *> variables;
+Ñ::ConstructorJAT* jat = nullptr;
 
-
-template <typename T> llvm::Value* creaLiteral(T valor) { /* Sin implementación */ }
-
-template <> llvm::Value* creaLiteral<float>(float valor)
-{
-    return llvm::ConstantFP::get(contextoLlvm, llvm::APFloat(valor));
-}
-
-template <> llvm::Value* creaLiteral<double>(double valor)
-{
-    return llvm::ConstantFP::get(contextoLlvm, llvm::APFloat(valor));
-}
-
-template <> llvm::Value* creaLiteral<bool>(bool valor)
-{
-    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(1, valor));
-}
-
-template <> llvm::Value* creaLiteral<int8_t>(int8_t valor)
-{
-    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(8, valor));
-}
-
-template <> llvm::Value* creaLiteral<uint8_t>(uint8_t valor)
-{
-    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(8, valor));
-}
-
-template <> llvm::Value* creaLiteral<int16_t>(int16_t valor)
-{
-    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(16, valor));
-}
-
-template <> llvm::Value* creaLiteral<uint16_t>(uint16_t valor)
-{
-    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(16, valor));
-}
-
-template <> llvm::Value* creaLiteral<int32_t>(int32_t valor)
-{
-    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(32, valor));
-}
-
-template <> llvm::Value* creaLiteral<uint32_t>(uint32_t valor)
-{
-    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(32, valor));
-}
-
-template <> llvm::Value* creaLiteral<int64_t>(int64_t valor)
-{
-    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(64, valor));
-}
-
-template <> llvm::Value* creaLiteral<uint64_t>(uint64_t valor)
-{
-    return llvm::ConstantInt::get(contextoLlvm, llvm::APInt(64, valor));
-}
 
 llvm::Value* creaSumaReales(llvm::Value* valor1, llvm::Value* valor2)
 {
     return constructorLlvm.CreateFAdd(valor1, valor2);
 }
-
-
 
 llvm::Value* creaRestaReales(llvm::Value* valor1, llvm::Value* valor2)
 {
@@ -110,6 +54,7 @@ llvm::Value* creaRestaEnteros(llvm::Value* valor1, llvm::Value* valor2)
     return constructorLlvm.CreateSub(valor1, valor2);
 }
 
+
 llvm::Value* llamaFunción(llvm::Function* función, std::vector<llvm::Value*> argumentos)
 {
     return constructorLlvm.CreateCall(función, argumentos);
@@ -121,57 +66,6 @@ llvm::Function* obténFunción(std::string nombre)
 }
 
 
-
-
-template <typename T> llvm::Function* declaraFunción(std::string nombre) { /* Sin implementación */ }
-
-template <> llvm::Function* declaraFunción<int8_t>(std::string nombre)
-{
-    std::vector<llvm::Type*> argumentos(0);
-    llvm::FunctionType* firmaFunción = llvm::FunctionType::get(llvm::Type::getInt8Ty(contextoLlvm), argumentos, false);
-    llvm::Function* función = llvm::Function::Create(firmaFunción, llvm::Function::ExternalLinkage, nombre, móduloLlvm.get());
-    return función;
-}
-
-template <> llvm::Function* declaraFunción<int16_t>(std::string nombre)
-{
-    std::vector<llvm::Type*> argumentos(0);
-    llvm::FunctionType* firmaFunción = llvm::FunctionType::get(llvm::Type::getInt16Ty(contextoLlvm), argumentos, false);
-    llvm::Function* función = llvm::Function::Create(firmaFunción, llvm::Function::ExternalLinkage, nombre, móduloLlvm.get());
-    return función;
-}
-
-template <> llvm::Function* declaraFunción<int32_t>(std::string nombre)
-{
-    std::vector<llvm::Type*> argumentos(0);
-    llvm::FunctionType* firmaFunción = llvm::FunctionType::get(llvm::Type::getInt32Ty(contextoLlvm), argumentos, false);
-    llvm::Function* función = llvm::Function::Create(firmaFunción, llvm::Function::ExternalLinkage, nombre, móduloLlvm.get());
-    return función;
-}
-
-template <> llvm::Function* declaraFunción<int64_t>(std::string nombre)
-{
-    std::vector<llvm::Type*> argumentos(0);
-    llvm::FunctionType* firmaFunción = llvm::FunctionType::get(llvm::Type::getInt64Ty(contextoLlvm), argumentos, false);
-    llvm::Function* función = llvm::Function::Create(firmaFunción, llvm::Function::ExternalLinkage, nombre, móduloLlvm.get());
-    return función;
-}
-
-template <> llvm::Function* declaraFunción<float>(std::string nombre)
-{
-    std::vector<llvm::Type*> argumentos(0);
-    llvm::FunctionType* firmaFunción = llvm::FunctionType::get(llvm::Type::getFloatTy(contextoLlvm), argumentos, false);
-    llvm::Function* función = llvm::Function::Create(firmaFunción, llvm::Function::ExternalLinkage, nombre, móduloLlvm.get());
-    return función;
-}
-
-template <> llvm::Function* declaraFunción<double>(std::string nombre)
-{
-    std::vector<llvm::Type*> argumentos(0);
-    llvm::FunctionType* firmaFunción = llvm::FunctionType::get(llvm::Type::getDoubleTy(contextoLlvm), argumentos, false);
-    llvm::Function* función = llvm::Function::Create(firmaFunción, llvm::Function::ExternalLinkage, nombre, móduloLlvm.get());
-    return función;
-}
 
 llvm::Value* sumaEnteros(int32_t val1, int32_t val2)
 {

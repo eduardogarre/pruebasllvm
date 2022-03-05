@@ -1,15 +1,6 @@
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Type.h"
-#include <algorithm>
-#include <cctype>
-#include <cstdio>
-#include <cstdlib>
-#include <iostream>
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
 
 extern llvm::LLVMContext contextoLlvm;
 
