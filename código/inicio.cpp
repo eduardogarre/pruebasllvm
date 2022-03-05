@@ -368,6 +368,29 @@ int main(int argc, char** argv)
         cierraFunción(función, resultado);
     }
 
+    { // SUMA VARIABLES ENTERAS
+        auto función = defineFunción<int32_t>("sumaVariablesEnteras");
+        llvm::Value* variable1 = creaVariable(creaTipo<int32_t>(), "variable1");
+        llvm::Value* variable2 = creaVariable(creaTipo<int32_t>(), "variable2");
+        ponEnVariable(variable1, creaLiteral<int32_t>(4));
+        ponEnVariable(variable2, creaLiteral<int32_t>(38));
+        llvm::Value* var1 = leeVariable(variable1);
+        llvm::Value* var2 = leeVariable(variable2);
+        llvm::Value* resultado = creaSumaEnteros(var1, var2);
+        cierraFunción(función, resultado);
+    }
+
+    { // SUMA VARIABLES REALES
+        auto función = defineFunción<double>("sumaVariablesReales");
+        llvm::Value* variable1 = creaVariable(creaTipo<double>(), "variable1");
+        llvm::Value* variable2 = creaVariable(creaTipo<double>(), "variable2");
+        ponEnVariable(variable1, creaLiteral<double>(40.0));
+        ponEnVariable(variable2, creaLiteral<double>(2.0));
+        llvm::Value* var1 = leeVariable(variable1);
+        llvm::Value* var2 = leeVariable(variable2);
+        llvm::Value* resultado = creaSumaReales(var1, var2);
+        cierraFunción(función, resultado);
+    }
 
     di(ColorConsola.cianclaro);
     di("-------------------------------");
@@ -400,6 +423,8 @@ int main(int argc, char** argv)
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaLiteralesReales = jat->busca("restaLiteralesReales");
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloVariableEntera = jat->busca("variableEntera");
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloVariableReal = jat->busca("variableReal");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaVariablesEnteras = jat->busca("sumaVariablesEnteras");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaVariablesReales = jat->busca("sumaVariablesReales");
 
     int32_t (*pSumaLiteralesEnteros)() = (int32_t (*)()) ((intptr_t)(símboloSumaLiteralesEnteros->getAddress()));
     double (*pSumaLiteralesReales)() = (double (*)()) ((intptr_t)(símboloSumaLiteralesReales->getAddress()));
@@ -407,6 +432,8 @@ int main(int argc, char** argv)
     double (*pRestaLiteralesReales)() = (double (*)()) ((intptr_t)(símboloRestaLiteralesReales->getAddress()));
     int32_t (*pVariableEntera)() = (int32_t (*)()) ((intptr_t)(símboloVariableEntera->getAddress()));
     double (*pVariableReal)() = (double (*)()) ((intptr_t)(símboloVariableReal->getAddress()));
+    int32_t (*pSumaVariablesEnteras)() = (int32_t (*)()) ((intptr_t)(símboloSumaVariablesEnteras->getAddress()));
+    double (*pSumaVariablesReales)() = (double (*)()) ((intptr_t)(símboloSumaVariablesReales->getAddress()));
 
     fprintf(stderr, ColorConsola.cianclaro);
     fprintf(stderr, "sumaLiteralesEnteros()");
@@ -459,6 +486,24 @@ int main(int argc, char** argv)
     fprintf(stderr, "\t\t▶   ");
     fprintf(stderr, ColorConsola.amarilloclaro);
     fprintf(stderr, "%f", pVariableReal());
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "\n");
+
+    fprintf(stderr, ColorConsola.cianclaro);
+    fprintf(stderr, "sumaVariablesEnteras()");
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "\t▶   ");
+    fprintf(stderr, ColorConsola.amarilloclaro);
+    fprintf(stderr, "%d", pSumaVariablesEnteras());
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "\n");
+
+    fprintf(stderr, ColorConsola.cianclaro);
+    fprintf(stderr, "sumaVariablesReales()");
+    fprintf(stderr, ColorConsola.predefinido);
+    fprintf(stderr, "\t▶   ");
+    fprintf(stderr, ColorConsola.amarilloclaro);
+    fprintf(stderr, "%f", pSumaVariablesReales());
     fprintf(stderr, ColorConsola.predefinido);
     fprintf(stderr, "\n");
 
