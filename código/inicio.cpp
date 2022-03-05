@@ -79,6 +79,7 @@ int main(int argc, char** argv)
         if(!jat)
         {
             di("Error al crear el constructor JAT");
+            return -1;
         }
     }
 
