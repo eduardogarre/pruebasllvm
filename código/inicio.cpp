@@ -441,28 +441,31 @@ int main(int argc, char** argv)
     di(ColorConsola.predefinido);
 
     // Busco los símbolos en el constructor JAT
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaLiteralesEnteros = jat->busca("sumaLiteralesEnteros");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaLiteralesReales = jat->busca("sumaLiteralesReales");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaLiteralesEnteros = jat->busca("restaLiteralesEnteros");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaLiteralesReales = jat->busca("restaLiteralesReales");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloVariableEntera = jat->busca("variableEntera");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloVariableReal = jat->busca("variableReal");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaVariablesEnteras = jat->busca("sumaVariablesEnteras");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaVariablesReales = jat->busca("sumaVariablesReales");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaVariablesEnteras = jat->busca("restaVariablesEnteras");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaVariablesReales = jat->busca("restaVariablesReales");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaLiteralesEnteros    = jat->busca("sumaLiteralesEnteros");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaLiteralesReales     = jat->busca("sumaLiteralesReales");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaLiteralesEnteros   = jat->busca("restaLiteralesEnteros");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaLiteralesReales    = jat->busca("restaLiteralesReales");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloVariableEntera          = jat->busca("variableEntera");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloVariableReal            = jat->busca("variableReal");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaVariablesEnteras    = jat->busca("sumaVariablesEnteras");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaVariablesReales     = jat->busca("sumaVariablesReales");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaVariablesEnteras   = jat->busca("restaVariablesEnteras");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaVariablesReales    = jat->busca("restaVariablesReales");
 
-    int32_t (*pSumaLiteralesEnteros)() = (int32_t (*)()) ((intptr_t)(símboloSumaLiteralesEnteros->getAddress()));
-    double (*pSumaLiteralesReales)() = (double (*)()) ((intptr_t)(símboloSumaLiteralesReales->getAddress()));
-    int32_t (*pRestaLiteralesEnteros)() = (int32_t (*)()) ((intptr_t)(símboloRestaLiteralesEnteros->getAddress()));
-    double (*pRestaLiteralesReales)() = (double (*)()) ((intptr_t)(símboloRestaLiteralesReales->getAddress()));
-    int32_t (*pVariableEntera)() = (int32_t (*)()) ((intptr_t)(símboloVariableEntera->getAddress()));
-    double (*pVariableReal)() = (double (*)()) ((intptr_t)(símboloVariableReal->getAddress()));
-    int32_t (*pSumaVariablesEnteras)() = (int32_t (*)()) ((intptr_t)(símboloSumaVariablesEnteras->getAddress()));
-    double (*pSumaVariablesReales)() = (double (*)()) ((intptr_t)(símboloSumaVariablesReales->getAddress()));
-    int32_t (*pRestaVariablesEnteras)() = (int32_t (*)()) ((intptr_t)(símboloRestaVariablesEnteras->getAddress()));
-    double (*pRestaVariablesReales)() = (double (*)()) ((intptr_t)(símboloRestaVariablesReales->getAddress()));
+    // Obtengo punteros a las funciones construidas
+    int32_t (*pSumaLiteralesEnteros)()      = (int32_t  (*)()) ((intptr_t)(símboloSumaLiteralesEnteros->getAddress()));
+    double  (*pSumaLiteralesReales)()       = (double   (*)()) ((intptr_t)(símboloSumaLiteralesReales->getAddress()));
+    int32_t (*pRestaLiteralesEnteros)()     = (int32_t  (*)()) ((intptr_t)(símboloRestaLiteralesEnteros->getAddress()));
+    double  (*pRestaLiteralesReales)()      = (double   (*)()) ((intptr_t)(símboloRestaLiteralesReales->getAddress()));
+    int32_t (*pVariableEntera)()            = (int32_t  (*)()) ((intptr_t)(símboloVariableEntera->getAddress()));
+    double  (*pVariableReal)()              = (double   (*)()) ((intptr_t)(símboloVariableReal->getAddress()));
+    int32_t (*pSumaVariablesEnteras)()      = (int32_t  (*)()) ((intptr_t)(símboloSumaVariablesEnteras->getAddress()));
+    double  (*pSumaVariablesReales)()       = (double   (*)()) ((intptr_t)(símboloSumaVariablesReales->getAddress()));
+    int32_t (*pRestaVariablesEnteras)()     = (int32_t  (*)()) ((intptr_t)(símboloRestaVariablesEnteras->getAddress()));
+    double  (*pRestaVariablesReales)()      = (double   (*)()) ((intptr_t)(símboloRestaVariablesReales->getAddress()));
 
+    // Ejecuto una a una todas las funciones:
+    
     fprintf(stderr, ColorConsola.cianclaro);
     fprintf(stderr, "sumaLiteralesEnteros()");
     fprintf(stderr, ColorConsola.predefinido);
