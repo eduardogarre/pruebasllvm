@@ -22,72 +22,13 @@
 
 #include "consola.hpp"
 #include "justoatiempo.hpp"
+#include "tipo.hpp"
 
-static llvm::LLVMContext contextoLlvm;
+llvm::LLVMContext contextoLlvm;
 static llvm::IRBuilder<> constructorLlvm(contextoLlvm);
 static std::unique_ptr<llvm::Module> móduloLlvm;
 static std::map<std::string, llvm::Value *> variables;
 static Ñ::ConstructorJAT* jat = nullptr;
-
-
-
-template <typename T> llvm::Type* creaTipo() { /* Sin implementación */ }
-
-template <> llvm::Type* creaTipo<bool>()
-{
-    return llvm::Type::getInt1Ty(contextoLlvm);
-}
-
-template <> llvm::Type* creaTipo<int8_t>()
-{
-    return llvm::Type::getInt8Ty(contextoLlvm);
-}
-
-template <> llvm::Type* creaTipo<uint8_t>()
-{
-    return llvm::Type::getInt8Ty(contextoLlvm);
-}
-
-template <> llvm::Type* creaTipo<int16_t>()
-{
-    return llvm::Type::getInt16Ty(contextoLlvm);
-}
-
-template <> llvm::Type* creaTipo<uint16_t>()
-{
-    return llvm::Type::getInt16Ty(contextoLlvm);
-}
-
-template <> llvm::Type* creaTipo<int32_t>()
-{
-    return llvm::Type::getInt32Ty(contextoLlvm);
-}
-
-template <> llvm::Type* creaTipo<uint32_t>()
-{
-    return llvm::Type::getInt32Ty(contextoLlvm);
-}
-
-template <> llvm::Type* creaTipo<int64_t>()
-{
-    return llvm::Type::getInt64Ty(contextoLlvm);
-}
-
-template <> llvm::Type* creaTipo<uint64_t>()
-{
-    return llvm::Type::getInt64Ty(contextoLlvm);
-}
-
-template <> llvm::Type* creaTipo<float>()
-{
-    return llvm::Type::getFloatTy(contextoLlvm);
-}
-
-template <> llvm::Type* creaTipo<double>()
-{
-    return llvm::Type::getDoubleTy(contextoLlvm);
-}
-
 
 
 template <typename T> llvm::Value* creaLiteral(T valor) { /* Sin implementación */ }
@@ -465,7 +406,7 @@ int main(int argc, char** argv)
     double  (*pRestaVariablesReales)()      = (double   (*)()) ((intptr_t)(símboloRestaVariablesReales->getAddress()));
 
     // Ejecuto una a una todas las funciones:
-    
+
     fprintf(stderr, ColorConsola.cianclaro);
     fprintf(stderr, "sumaLiteralesEnteros()");
     fprintf(stderr, ColorConsola.predefinido);
