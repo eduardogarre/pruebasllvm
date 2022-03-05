@@ -350,11 +350,9 @@ int main(int argc, char** argv)
 
     // CREA, PON Y LEE VARIABLE ENTERA
     auto fnVariableEntera = defineFunción<int32_t>("variableEntera");
-    llvm::Type* tipoEnt32 = creaTipo<int32_t>();
-    llvm::Value* variableEntera1 = creaVariable(tipoEnt32, "variable1");
-    llvm::Value* valor42 = creaLiteral<int32_t>(42);
-    ponEnVariable(variableEntera1, valor42);
-    llvm::Value* resultadoVariableEntera = leeVariable(variableEntera1);
+    llvm::Value* variableEntera = creaVariable(creaTipo<int32_t>(), "variable");
+    ponEnVariable(variableEntera, creaLiteral<int32_t>(42));
+    llvm::Value* resultadoVariableEntera = leeVariable(variableEntera);
     cierraFunción(fnVariableEntera, resultadoVariableEntera);
 
 
