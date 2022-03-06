@@ -175,6 +175,19 @@ int main(int argc, char** argv)
         cierraFunción(función, resultado);
     }
 
+    { // CREA SERIE (Array)
+        auto función = defineFunción<int32_t>("creaEscribeLeeSerie");
+        auto tipoSerie = creaSerie<int32_t>(4);
+        llvm::Value* variableSerie = creaVariable(tipoSerie, "variableSerie");
+        llvm::Value* serie0 = leeVariable(variableSerie);
+        llvm::Value* serie1 = constructorLlvm.CreateInsertValue(serie0, creaLiteral<int32_t>(40), {0});
+        llvm::Value* serie2 = constructorLlvm.CreateInsertValue(serie1, creaLiteral<int32_t>(2), {1});
+        llvm::Value* valorElemento1 = constructorLlvm.CreateExtractValue(serie2, {0});
+        llvm::Value* valorElemento2 = constructorLlvm.CreateExtractValue(serie2, {1});
+        llvm::Value* resultado = constructorLlvm.CreateAdd(valorElemento1, valorElemento2);
+        cierraFunción(función, resultado);
+    }
+
     di(ColorConsola.cianclaro);
     di("-------------------------------");
     di("|  REPRESENTACIÓN INTERMEDIA  |");
@@ -210,6 +223,7 @@ int main(int argc, char** argv)
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaVariablesReales     = jat->busca("sumaVariablesReales");
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaVariablesEnteras   = jat->busca("restaVariablesEnteras");
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaVariablesReales    = jat->busca("restaVariablesReales");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloCreaEscribeLeeSerie     = jat->busca("creaEscribeLeeSerie");
 
     // Obtengo punteros a las funciones construidas
     int32_t (*pSumaLiteralesEnteros)()      = (int32_t  (*)()) ((intptr_t)(símboloSumaLiteralesEnteros->getAddress()));
@@ -222,6 +236,7 @@ int main(int argc, char** argv)
     double  (*pSumaVariablesReales)()       = (double   (*)()) ((intptr_t)(símboloSumaVariablesReales->getAddress()));
     int32_t (*pRestaVariablesEnteras)()     = (int32_t  (*)()) ((intptr_t)(símboloRestaVariablesEnteras->getAddress()));
     double  (*pRestaVariablesReales)()      = (double   (*)()) ((intptr_t)(símboloRestaVariablesReales->getAddress()));
+    int32_t (*pCreaEscribeLeeSerie)()       = (int32_t  (*)()) ((intptr_t)(símboloCreaEscribeLeeSerie->getAddress()));
 
     // Ejecuto una a una todas las funciones:
 
@@ -312,6 +327,15 @@ int main(int argc, char** argv)
     printf("\t▶   ");
     printf(ColorConsola.amarilloclaro);
     printf("%f", pRestaVariablesReales());
+    printf(ColorConsola.predefinido);
+    printf("\n");
+
+    printf(ColorConsola.cianclaro);
+    printf("creaEscribeLeeSerie()");
+    printf(ColorConsola.predefinido);
+    printf("\t▶   ");
+    printf(ColorConsola.amarilloclaro);
+    printf("%d", pCreaEscribeLeeSerie());
     printf(ColorConsola.predefinido);
     printf("\n");
 
