@@ -175,7 +175,7 @@ int main(int argc, char** argv)
         cierraFunción(función, resultado);
     }
 
-    { // CREA SERIE (Array)
+    { // CREA ESCRIBE Y LEE SERIE (Array) DE ENTEROS
         auto función = defineFunción<int32_t>("creaEscribeLeeSerie");
         auto tipoSerie = creaSerie<int32_t>(4);
         llvm::Value* variableSerie = creaVariable(tipoSerie, "variableSerie");
