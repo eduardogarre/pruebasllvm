@@ -182,8 +182,10 @@ int main(int argc, char** argv)
         llvm::Value* serie0 = leeVariable(variableSerie);
         llvm::Value* serie1 = constructorLlvm.CreateInsertValue(serie0, creaLiteral<int32_t>(40), {0});
         llvm::Value* serie2 = constructorLlvm.CreateInsertValue(serie1, creaLiteral<int32_t>(2), {1});
-        llvm::Value* valorElemento1 = constructorLlvm.CreateExtractValue(serie2, {0});
-        llvm::Value* valorElemento2 = constructorLlvm.CreateExtractValue(serie2, {1});
+        ponEnVariable(variableSerie, serie2);
+        llvm::Value* serie3 = leeVariable(variableSerie);
+        llvm::Value* valorElemento1 = constructorLlvm.CreateExtractValue(serie3, {0});
+        llvm::Value* valorElemento2 = constructorLlvm.CreateExtractValue(serie3, {1});
         llvm::Value* resultado = constructorLlvm.CreateAdd(valorElemento1, valorElemento2);
         cierraFunción(función, resultado);
     }
