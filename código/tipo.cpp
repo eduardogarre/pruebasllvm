@@ -36,6 +36,11 @@ template <> llvm::Type* creaTipo<int32_t>()
     return llvm::Type::getInt32Ty(contextoLlvm);
 }
 
+template <> llvm::Type* creaTipo<int32_t*>()
+{
+    return llvm::PointerType::getUnqual(creaTipo<int32_t>());
+}
+
 template <> llvm::Type* creaTipo<uint32_t>()
 {
     return llvm::Type::getInt32Ty(contextoLlvm);

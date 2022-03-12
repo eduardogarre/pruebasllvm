@@ -55,12 +55,12 @@ llvm::Value* creaVariable(llvm::Type* tipo, std::string nombre)
     return constructorLlvm.CreateAlloca(tipo, nullptr, nombre);
 }
 
-void ponEnVariable(llvm::Value* variable, llvm::Value* valor)
+void ponEnPuntero(llvm::Value* variable, llvm::Value* valor)
 {
     constructorLlvm.CreateStore(valor, variable, false);
 }
 
-llvm::Value* leeVariable(llvm::Value* variable)
+llvm::Value* leeDePuntero(llvm::Value* variable)
 {
     return constructorLlvm.CreateLoad(variable);
 }
@@ -114,16 +114,16 @@ int main(int argc, char** argv)
     { // CREA, PON Y LEE VARIABLE ENTERA
         auto función = defineFunción<int32_t>("variableEntera");
         llvm::Value* variable = creaVariable(creaTipo<int32_t>(), "variable");
-        ponEnVariable(variable, creaLiteral<int32_t>(42));
-        llvm::Value* resultado = leeVariable(variable);
+        ponEnPuntero(variable, creaLiteral<int32_t>(42));
+        llvm::Value* resultado = leeDePuntero(variable);
         cierraFunción(función, resultado);
     }
 
     { // CREA, PON Y LEE VARIABLE REAL
         auto función = defineFunción<double>("variableReal");
         llvm::Value* variable = creaVariable(creaTipo<double>(), "variable");
-        ponEnVariable(variable, creaLiteral<double>(42.0));
-        llvm::Value* resultado = leeVariable(variable);
+        ponEnPuntero(variable, creaLiteral<double>(42.0));
+        llvm::Value* resultado = leeDePuntero(variable);
         cierraFunción(función, resultado);
     }
 
@@ -131,10 +131,10 @@ int main(int argc, char** argv)
         auto función = defineFunción<int32_t>("sumaVariablesEnteras");
         llvm::Value* variable1 = creaVariable(creaTipo<int32_t>(), "variable1");
         llvm::Value* variable2 = creaVariable(creaTipo<int32_t>(), "variable2");
-        ponEnVariable(variable1, creaLiteral<int32_t>(4));
-        ponEnVariable(variable2, creaLiteral<int32_t>(38));
-        llvm::Value* var1 = leeVariable(variable1);
-        llvm::Value* var2 = leeVariable(variable2);
+        ponEnPuntero(variable1, creaLiteral<int32_t>(4));
+        ponEnPuntero(variable2, creaLiteral<int32_t>(38));
+        llvm::Value* var1 = leeDePuntero(variable1);
+        llvm::Value* var2 = leeDePuntero(variable2);
         llvm::Value* resultado = constructorLlvm.CreateAdd(var1, var2);
         cierraFunción(función, resultado);
     }
@@ -143,10 +143,10 @@ int main(int argc, char** argv)
         auto función = defineFunción<double>("sumaVariablesReales");
         llvm::Value* variable1 = creaVariable(creaTipo<double>(), "variable1");
         llvm::Value* variable2 = creaVariable(creaTipo<double>(), "variable2");
-        ponEnVariable(variable1, creaLiteral<double>(40.25));
-        ponEnVariable(variable2, creaLiteral<double>(1.75));
-        llvm::Value* var1 = leeVariable(variable1);
-        llvm::Value* var2 = leeVariable(variable2);
+        ponEnPuntero(variable1, creaLiteral<double>(40.25));
+        ponEnPuntero(variable2, creaLiteral<double>(1.75));
+        llvm::Value* var1 = leeDePuntero(variable1);
+        llvm::Value* var2 = leeDePuntero(variable2);
         llvm::Value* resultado = constructorLlvm.CreateFAdd(var1, var2);
         cierraFunción(función, resultado);
     }
@@ -155,10 +155,10 @@ int main(int argc, char** argv)
         auto función = defineFunción<int32_t>("restaVariablesEnteras");
         llvm::Value* variable1 = creaVariable(creaTipo<int32_t>(), "variable1");
         llvm::Value* variable2 = creaVariable(creaTipo<int32_t>(), "variable2");
-        ponEnVariable(variable1, creaLiteral<int32_t>(48));
-        ponEnVariable(variable2, creaLiteral<int32_t>(6));
-        llvm::Value* var1 = leeVariable(variable1);
-        llvm::Value* var2 = leeVariable(variable2);
+        ponEnPuntero(variable1, creaLiteral<int32_t>(48));
+        ponEnPuntero(variable2, creaLiteral<int32_t>(6));
+        llvm::Value* var1 = leeDePuntero(variable1);
+        llvm::Value* var2 = leeDePuntero(variable2);
         llvm::Value* resultado = constructorLlvm.CreateSub(var1, var2);
         cierraFunción(función, resultado);
     }
@@ -167,10 +167,10 @@ int main(int argc, char** argv)
         auto función = defineFunción<double>("restaVariablesReales");
         llvm::Value* variable1 = creaVariable(creaTipo<double>(), "variable1");
         llvm::Value* variable2 = creaVariable(creaTipo<double>(), "variable2");
-        ponEnVariable(variable1, creaLiteral<double>(46.5));
-        ponEnVariable(variable2, creaLiteral<double>(4.5));
-        llvm::Value* var1 = leeVariable(variable1);
-        llvm::Value* var2 = leeVariable(variable2);
+        ponEnPuntero(variable1, creaLiteral<double>(46.5));
+        ponEnPuntero(variable2, creaLiteral<double>(4.5));
+        llvm::Value* var1 = leeDePuntero(variable1);
+        llvm::Value* var2 = leeDePuntero(variable2);
         llvm::Value* resultado = constructorLlvm.CreateFSub(var1, var2);
         cierraFunción(función, resultado);
     }
@@ -179,14 +179,27 @@ int main(int argc, char** argv)
         auto función = defineFunción<int32_t>("creaEscribeLeeSerie");
         auto tipoSerie = creaSerie<int32_t>(4);
         llvm::Value* variableSerie = creaVariable(tipoSerie, "variableSerie");
-        llvm::Value* serie0 = leeVariable(variableSerie);
+        llvm::Value* serie0 = leeDePuntero(variableSerie);
         llvm::Value* serie1 = constructorLlvm.CreateInsertValue(serie0, creaLiteral<int32_t>(40), {0});
         llvm::Value* serie2 = constructorLlvm.CreateInsertValue(serie1, creaLiteral<int32_t>(2), {1});
-        ponEnVariable(variableSerie, serie2);
-        llvm::Value* serie3 = leeVariable(variableSerie);
+        ponEnPuntero(variableSerie, serie2);
+        llvm::Value* serie3 = leeDePuntero(variableSerie);
         llvm::Value* valorElemento1 = constructorLlvm.CreateExtractValue(serie3, {0});
         llvm::Value* valorElemento2 = constructorLlvm.CreateExtractValue(serie3, {1});
         llvm::Value* resultado = constructorLlvm.CreateAdd(valorElemento1, valorElemento2);
+        cierraFunción(función, resultado);
+    }
+
+    { // CREA, PON Y LEE PUNTERO A VARIABLE ENTERA
+        auto función = defineFunción<int32_t>("punteroVariableEntera");
+        llvm::Type* tipoEnt32 = creaTipo<int32_t>();
+        llvm::Type* tipoPtrEnt32 = creaTipo<int32_t*>();
+        llvm::Value* variable = creaVariable(tipoEnt32, "variable");
+        llvm::Value* puntero = creaVariable(tipoPtrEnt32, "puntero");
+        ponEnPuntero(puntero, variable);
+        ponEnPuntero(variable, creaLiteral<int32_t>(42));
+        llvm::Value* dirección = leeDePuntero(puntero);
+        llvm::Value* resultado = leeDePuntero(dirección);
         cierraFunción(función, resultado);
     }
 
@@ -226,6 +239,7 @@ int main(int argc, char** argv)
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaVariablesEnteras   = jat->busca("restaVariablesEnteras");
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaVariablesReales    = jat->busca("restaVariablesReales");
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloCreaEscribeLeeSerie     = jat->busca("creaEscribeLeeSerie");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloPunteroVariableEntera   = jat->busca("punteroVariableEntera");
 
     // Obtengo punteros a las funciones construidas
     int32_t (*pSumaLiteralesEnteros)()      = (int32_t  (*)()) ((intptr_t)(símboloSumaLiteralesEnteros->getAddress()));
@@ -239,6 +253,7 @@ int main(int argc, char** argv)
     int32_t (*pRestaVariablesEnteras)()     = (int32_t  (*)()) ((intptr_t)(símboloRestaVariablesEnteras->getAddress()));
     double  (*pRestaVariablesReales)()      = (double   (*)()) ((intptr_t)(símboloRestaVariablesReales->getAddress()));
     int32_t (*pCreaEscribeLeeSerie)()       = (int32_t  (*)()) ((intptr_t)(símboloCreaEscribeLeeSerie->getAddress()));
+    int32_t (*pPunteroVariableEntera)()     = (int32_t  (*)()) ((intptr_t)(símboloPunteroVariableEntera->getAddress()));
 
     // Ejecuto una a una todas las funciones:
 
@@ -338,6 +353,15 @@ int main(int argc, char** argv)
     printf("\t▶   ");
     printf(ColorConsola.amarilloclaro);
     printf("%d", pCreaEscribeLeeSerie());
+    printf(ColorConsola.predefinido);
+    printf("\n");
+
+    printf(ColorConsola.cianclaro);
+    printf("punteroVariableEntera()");
+    printf(ColorConsola.predefinido);
+    printf("\t▶   ");
+    printf(ColorConsola.amarilloclaro);
+    printf("%d", pPunteroVariableEntera());
     printf(ColorConsola.predefinido);
     printf("\n");
 
