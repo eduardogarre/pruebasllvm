@@ -283,9 +283,9 @@ int main(int argc, char** argv)
     int32_t (*pRestaVariablesEnteras)()         = (int32_t  (*)()) ((intptr_t)(símboloRestaVariablesEnteras->getAddress()));
     double  (*pRestaVariablesReales)()          = (double   (*)()) ((intptr_t)(símboloRestaVariablesReales->getAddress()));
     int32_t (*pCreaEscribeLeeSerieEnteros)()    = (int32_t  (*)()) ((intptr_t)(símboloCreaEscribeLeeSerieEnteros->getAddress()));
-    double (*pCreaEscribeLeeSerieReales)()      = (double   (*)()) ((intptr_t)(símboloCreaEscribeLeeSerieReales->getAddress()));
+    double  (*pCreaEscribeLeeSerieReales)()     = (double   (*)()) ((intptr_t)(símboloCreaEscribeLeeSerieReales->getAddress()));
     int32_t (*pPunteroVariableEntera)()         = (int32_t  (*)()) ((intptr_t)(símboloPunteroVariableEntera->getAddress()));
-    double (*pPunteroVariableReal)()            = (double   (*)()) ((intptr_t)(símboloPunteroVariableReal->getAddress()));
+    double  (*pPunteroVariableReal)()           = (double   (*)()) ((intptr_t)(símboloPunteroVariableReal->getAddress()));
 
     // Ejecuto una a una todas las funciones:
 
