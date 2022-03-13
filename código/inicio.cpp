@@ -176,7 +176,7 @@ int main(int argc, char** argv)
     }
 
     { // CREA ESCRIBE Y LEE SERIE (Array) DE ENTEROS
-        auto función = defineFunción<int32_t>("creaEscribeLeeSerie");
+        auto función = defineFunción<int32_t>("creaEscribeLeeSerieEnteros");
         auto tipoSerie = creaSerie<int32_t>(4);
         llvm::Value* variableSerie = creaVariable(tipoSerie, "variableSerie");
         llvm::Value* serie0 = leeDePuntero(variableSerie);
@@ -190,6 +190,21 @@ int main(int argc, char** argv)
         cierraFunción(función, resultado);
     }
 
+    { // CREA ESCRIBE Y LEE SERIE (Array) DE REALES
+        auto función = defineFunción<double>("creaEscribeLeeSerieReales");
+        auto tipoSerie = creaSerie<double>(4);
+        llvm::Value* variableSerie = creaVariable(tipoSerie, "variableSerie");
+        llvm::Value* serie0 = leeDePuntero(variableSerie);
+        llvm::Value* serie1 = constructorLlvm.CreateInsertValue(serie0, creaLiteral<double>(40.0), {0});
+        llvm::Value* serie2 = constructorLlvm.CreateInsertValue(serie1, creaLiteral<double>(2.0), {1});
+        ponEnPuntero(variableSerie, serie2);
+        llvm::Value* serie3 = leeDePuntero(variableSerie);
+        llvm::Value* valorElemento1 = constructorLlvm.CreateExtractValue(serie3, {0});
+        llvm::Value* valorElemento2 = constructorLlvm.CreateExtractValue(serie3, {1});
+        llvm::Value* resultado = constructorLlvm.CreateFAdd(valorElemento1, valorElemento2);
+        cierraFunción(función, resultado);
+    }
+
     { // CREA, PON Y LEE PUNTERO A VARIABLE ENTERA
         auto función = defineFunción<int32_t>("punteroVariableEntera");
         llvm::Type* tipoEnt32 = creaTipo<int32_t>();
@@ -198,6 +213,19 @@ int main(int argc, char** argv)
         llvm::Value* puntero = creaVariable(tipoPtrEnt32, "puntero");
         ponEnPuntero(puntero, variable);
         ponEnPuntero(variable, creaLiteral<int32_t>(42));
+        llvm::Value* dirección = leeDePuntero(puntero);
+        llvm::Value* resultado = leeDePuntero(dirección);
+        cierraFunción(función, resultado);
+    }
+
+    { // CREA, PON Y LEE PUNTERO A VARIABLE REAL
+        auto función = defineFunción<double>("punteroVariableReal");
+        llvm::Type* tipoReal64 = creaTipo<double>();
+        llvm::Type* tipoPtrReal64 = creaTipo<double*>();
+        llvm::Value* variable = creaVariable(tipoReal64, "variable");
+        llvm::Value* puntero = creaVariable(tipoPtrReal64, "puntero");
+        ponEnPuntero(puntero, variable);
+        ponEnPuntero(variable, creaLiteral<double>(42.0));
         llvm::Value* dirección = leeDePuntero(puntero);
         llvm::Value* resultado = leeDePuntero(dirección);
         cierraFunción(función, resultado);
@@ -228,39 +256,43 @@ int main(int argc, char** argv)
     di(ColorConsola.predefinido);
 
     // Busco los símbolos en el constructor JAT
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaLiteralesEnteros    = jat->busca("sumaLiteralesEnteros");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaLiteralesReales     = jat->busca("sumaLiteralesReales");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaLiteralesEnteros   = jat->busca("restaLiteralesEnteros");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaLiteralesReales    = jat->busca("restaLiteralesReales");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloVariableEntera          = jat->busca("variableEntera");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloVariableReal            = jat->busca("variableReal");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaVariablesEnteras    = jat->busca("sumaVariablesEnteras");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaVariablesReales     = jat->busca("sumaVariablesReales");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaVariablesEnteras   = jat->busca("restaVariablesEnteras");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaVariablesReales    = jat->busca("restaVariablesReales");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloCreaEscribeLeeSerie     = jat->busca("creaEscribeLeeSerie");
-    llvm::Expected<llvm::JITEvaluatedSymbol> símboloPunteroVariableEntera   = jat->busca("punteroVariableEntera");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaLiteralesEnteros        = jat->busca("sumaLiteralesEnteros");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaLiteralesReales         = jat->busca("sumaLiteralesReales");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaLiteralesEnteros       = jat->busca("restaLiteralesEnteros");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaLiteralesReales        = jat->busca("restaLiteralesReales");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloVariableEntera              = jat->busca("variableEntera");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloVariableReal                = jat->busca("variableReal");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaVariablesEnteras        = jat->busca("sumaVariablesEnteras");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloSumaVariablesReales         = jat->busca("sumaVariablesReales");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaVariablesEnteras       = jat->busca("restaVariablesEnteras");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloRestaVariablesReales        = jat->busca("restaVariablesReales");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloCreaEscribeLeeSerieEnteros  = jat->busca("creaEscribeLeeSerieEnteros");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloCreaEscribeLeeSerieReales   = jat->busca("creaEscribeLeeSerieReales");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloPunteroVariableEntera       = jat->busca("punteroVariableEntera");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloPunteroVariableReal         = jat->busca("punteroVariableReal");
 
     // Obtengo punteros a las funciones construidas
-    int32_t (*pSumaLiteralesEnteros)()      = (int32_t  (*)()) ((intptr_t)(símboloSumaLiteralesEnteros->getAddress()));
-    double  (*pSumaLiteralesReales)()       = (double   (*)()) ((intptr_t)(símboloSumaLiteralesReales->getAddress()));
-    int32_t (*pRestaLiteralesEnteros)()     = (int32_t  (*)()) ((intptr_t)(símboloRestaLiteralesEnteros->getAddress()));
-    double  (*pRestaLiteralesReales)()      = (double   (*)()) ((intptr_t)(símboloRestaLiteralesReales->getAddress()));
-    int32_t (*pVariableEntera)()            = (int32_t  (*)()) ((intptr_t)(símboloVariableEntera->getAddress()));
-    double  (*pVariableReal)()              = (double   (*)()) ((intptr_t)(símboloVariableReal->getAddress()));
-    int32_t (*pSumaVariablesEnteras)()      = (int32_t  (*)()) ((intptr_t)(símboloSumaVariablesEnteras->getAddress()));
-    double  (*pSumaVariablesReales)()       = (double   (*)()) ((intptr_t)(símboloSumaVariablesReales->getAddress()));
-    int32_t (*pRestaVariablesEnteras)()     = (int32_t  (*)()) ((intptr_t)(símboloRestaVariablesEnteras->getAddress()));
-    double  (*pRestaVariablesReales)()      = (double   (*)()) ((intptr_t)(símboloRestaVariablesReales->getAddress()));
-    int32_t (*pCreaEscribeLeeSerie)()       = (int32_t  (*)()) ((intptr_t)(símboloCreaEscribeLeeSerie->getAddress()));
-    int32_t (*pPunteroVariableEntera)()     = (int32_t  (*)()) ((intptr_t)(símboloPunteroVariableEntera->getAddress()));
+    int32_t (*pSumaLiteralesEnteros)()          = (int32_t  (*)()) ((intptr_t)(símboloSumaLiteralesEnteros->getAddress()));
+    double  (*pSumaLiteralesReales)()           = (double   (*)()) ((intptr_t)(símboloSumaLiteralesReales->getAddress()));
+    int32_t (*pRestaLiteralesEnteros)()         = (int32_t  (*)()) ((intptr_t)(símboloRestaLiteralesEnteros->getAddress()));
+    double  (*pRestaLiteralesReales)()          = (double   (*)()) ((intptr_t)(símboloRestaLiteralesReales->getAddress()));
+    int32_t (*pVariableEntera)()                = (int32_t  (*)()) ((intptr_t)(símboloVariableEntera->getAddress()));
+    double  (*pVariableReal)()                  = (double   (*)()) ((intptr_t)(símboloVariableReal->getAddress()));
+    int32_t (*pSumaVariablesEnteras)()          = (int32_t  (*)()) ((intptr_t)(símboloSumaVariablesEnteras->getAddress()));
+    double  (*pSumaVariablesReales)()           = (double   (*)()) ((intptr_t)(símboloSumaVariablesReales->getAddress()));
+    int32_t (*pRestaVariablesEnteras)()         = (int32_t  (*)()) ((intptr_t)(símboloRestaVariablesEnteras->getAddress()));
+    double  (*pRestaVariablesReales)()          = (double   (*)()) ((intptr_t)(símboloRestaVariablesReales->getAddress()));
+    int32_t (*pCreaEscribeLeeSerieEnteros)()    = (int32_t  (*)()) ((intptr_t)(símboloCreaEscribeLeeSerieEnteros->getAddress()));
+    double (*pCreaEscribeLeeSerieReales)()      = (double   (*)()) ((intptr_t)(símboloCreaEscribeLeeSerieReales->getAddress()));
+    int32_t (*pPunteroVariableEntera)()         = (int32_t  (*)()) ((intptr_t)(símboloPunteroVariableEntera->getAddress()));
+    double (*pPunteroVariableReal)()            = (double   (*)()) ((intptr_t)(símboloPunteroVariableReal->getAddress()));
 
     // Ejecuto una a una todas las funciones:
 
     printf(ColorConsola.cianclaro);
     printf("sumaLiteralesEnteros()");
     printf(ColorConsola.predefinido);
-    printf("\t▶   ");
+    printf("\t\t▶   ");
     printf(ColorConsola.amarilloclaro);
     printf("%d", pSumaLiteralesEnteros());
     printf(ColorConsola.predefinido);
@@ -269,7 +301,7 @@ int main(int argc, char** argv)
     printf(ColorConsola.cianclaro);
     printf("sumaLiteralesReales()");
     printf(ColorConsola.predefinido);
-    printf("\t▶   ");
+    printf("\t\t▶   ");
     printf(ColorConsola.amarilloclaro);
     printf("%f", pSumaLiteralesReales());
     printf(ColorConsola.predefinido);
@@ -278,7 +310,7 @@ int main(int argc, char** argv)
     printf(ColorConsola.cianclaro);
     printf("restaLiteralesEnteros()");
     printf(ColorConsola.predefinido);
-    printf("\t▶   ");
+    printf("\t\t▶   ");
     printf(ColorConsola.amarilloclaro);
     printf("%d", pRestaLiteralesEnteros());
     printf(ColorConsola.predefinido);
@@ -287,7 +319,7 @@ int main(int argc, char** argv)
     printf(ColorConsola.cianclaro);
     printf("restaLiteralesReales()");
     printf(ColorConsola.predefinido);
-    printf("\t▶   ");
+    printf("\t\t▶   ");
     printf(ColorConsola.amarilloclaro);
     printf("%f", pRestaLiteralesReales());
     printf(ColorConsola.predefinido);
@@ -296,7 +328,7 @@ int main(int argc, char** argv)
     printf(ColorConsola.cianclaro);
     printf("variableEntera()");
     printf(ColorConsola.predefinido);
-    printf("\t▶   ");
+    printf("\t\t▶   ");
     printf(ColorConsola.amarilloclaro);
     printf("%d", pVariableEntera());
     printf(ColorConsola.predefinido);
@@ -305,7 +337,7 @@ int main(int argc, char** argv)
     printf(ColorConsola.cianclaro);
     printf("variableReal()");
     printf(ColorConsola.predefinido);
-    printf("\t\t▶   ");
+    printf("\t\t\t▶   ");
     printf(ColorConsola.amarilloclaro);
     printf("%f", pVariableReal());
     printf(ColorConsola.predefinido);
@@ -314,7 +346,7 @@ int main(int argc, char** argv)
     printf(ColorConsola.cianclaro);
     printf("sumaVariablesEnteras()");
     printf(ColorConsola.predefinido);
-    printf("\t▶   ");
+    printf("\t\t▶   ");
     printf(ColorConsola.amarilloclaro);
     printf("%d", pSumaVariablesEnteras());
     printf(ColorConsola.predefinido);
@@ -323,7 +355,7 @@ int main(int argc, char** argv)
     printf(ColorConsola.cianclaro);
     printf("sumaVariablesReales()");
     printf(ColorConsola.predefinido);
-    printf("\t▶   ");
+    printf("\t\t▶   ");
     printf(ColorConsola.amarilloclaro);
     printf("%f", pSumaVariablesReales());
     printf(ColorConsola.predefinido);
@@ -332,7 +364,7 @@ int main(int argc, char** argv)
     printf(ColorConsola.cianclaro);
     printf("restaVariablesEnteras()");
     printf(ColorConsola.predefinido);
-    printf("\t▶   ");
+    printf("\t\t▶   ");
     printf(ColorConsola.amarilloclaro);
     printf("%d", pRestaVariablesEnteras());
     printf(ColorConsola.predefinido);
@@ -341,27 +373,45 @@ int main(int argc, char** argv)
     printf(ColorConsola.cianclaro);
     printf("restaVariablesReales()");
     printf(ColorConsola.predefinido);
-    printf("\t▶   ");
+    printf("\t\t▶   ");
     printf(ColorConsola.amarilloclaro);
     printf("%f", pRestaVariablesReales());
     printf(ColorConsola.predefinido);
     printf("\n");
 
     printf(ColorConsola.cianclaro);
-    printf("creaEscribeLeeSerie()");
+    printf("creaEscribeLeeSerieEnteros()");
     printf(ColorConsola.predefinido);
     printf("\t▶   ");
     printf(ColorConsola.amarilloclaro);
-    printf("%d", pCreaEscribeLeeSerie());
+    printf("%d", pCreaEscribeLeeSerieEnteros());
+    printf(ColorConsola.predefinido);
+    printf("\n");
+
+    printf(ColorConsola.cianclaro);
+    printf("creaEscribeLeeSerieReales()");
+    printf(ColorConsola.predefinido);
+    printf("\t▶   ");
+    printf(ColorConsola.amarilloclaro);
+    printf("%f", pCreaEscribeLeeSerieReales());
     printf(ColorConsola.predefinido);
     printf("\n");
 
     printf(ColorConsola.cianclaro);
     printf("punteroVariableEntera()");
     printf(ColorConsola.predefinido);
-    printf("\t▶   ");
+    printf("\t\t▶   ");
     printf(ColorConsola.amarilloclaro);
     printf("%d", pPunteroVariableEntera());
+    printf(ColorConsola.predefinido);
+    printf("\n");
+
+    printf(ColorConsola.cianclaro);
+    printf("punteroVariableReal()");
+    printf(ColorConsola.predefinido);
+    printf("\t\t▶   ");
+    printf(ColorConsola.amarilloclaro);
+    printf("%f", pPunteroVariableReal());
     printf(ColorConsola.predefinido);
     printf("\n");
 
