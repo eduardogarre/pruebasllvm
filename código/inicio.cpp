@@ -5,6 +5,7 @@
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
+#include "llvm/Support/Casting.h"
 #include "llvm/Support/TargetSelect.h"
 
 #include "consola.hpp"
@@ -231,6 +232,40 @@ int main(int argc, char** argv)
         cierraFunción(función, resultado);
     }
 
+    { // CREA Y ESCRIBE SERIE (Array) DE ENTEROS, LEE ELEMENTO
+        auto función = defineFunción<int32_t>("creaEscribeSerieEnterosLee");
+        auto tipoSerie = creaSerie<int32_t>(4);
+        llvm::Value* variableSerie = creaVariable(tipoSerie, "variableSerie");
+        llvm::Value* serie0 = leeDePuntero(variableSerie);
+        llvm::Value* serie1 = constructorLlvm.CreateInsertValue(serie0, creaLiteral<int32_t>(40), {0});
+        llvm::Value* serie2 = constructorLlvm.CreateInsertValue(serie1, creaLiteral<int32_t>(2), {1});
+        ponEnPuntero(variableSerie, serie2);
+        auto incógnita = llvm::cast<llvm::PointerType>(variableSerie->getType()->getScalarType());
+        llvm::Value* dirección1 = constructorLlvm.CreateGEP(tipoSerie, variableSerie, {creaLiteral<int64_t>(0), creaLiteral<int64_t>(0)});
+        llvm::Value* dirección2 = constructorLlvm.CreateGEP(tipoSerie, variableSerie, {creaLiteral<int64_t>(0), creaLiteral<int64_t>(1)});
+        llvm::Value* valorElemento1 = leeDePuntero(dirección1);
+        llvm::Value* valorElemento2 = leeDePuntero(dirección2);
+        llvm::Value* resultado = constructorLlvm.CreateAdd(valorElemento1, valorElemento2);
+        cierraFunción(función, resultado);
+    }
+
+    { // CREA Y ESCRIBE SERIE (Array) DE REALES, LEE ELEMENTO
+        auto función = defineFunción<double>("creaEscribeSerieRealesLee");
+        auto tipoSerie = creaSerie<double>(4);
+        llvm::Value* variableSerie = creaVariable(tipoSerie, "variableSerie");
+        llvm::Value* serie0 = leeDePuntero(variableSerie);
+        llvm::Value* serie1 = constructorLlvm.CreateInsertValue(serie0, creaLiteral<double>(40.0), {0});
+        llvm::Value* serie2 = constructorLlvm.CreateInsertValue(serie1, creaLiteral<double>(2.0), {1});
+        ponEnPuntero(variableSerie, serie2);
+        auto incógnita = llvm::cast<llvm::PointerType>(variableSerie->getType()->getScalarType());
+        llvm::Value* dirección1 = constructorLlvm.CreateGEP(tipoSerie, variableSerie, {creaLiteral<int64_t>(0), creaLiteral<int64_t>(0)});
+        llvm::Value* dirección2 = constructorLlvm.CreateGEP(tipoSerie, variableSerie, {creaLiteral<int64_t>(0), creaLiteral<int64_t>(1)});
+        llvm::Value* valorElemento1 = leeDePuntero(dirección1);
+        llvm::Value* valorElemento2 = leeDePuntero(dirección2);
+        llvm::Value* resultado = constructorLlvm.CreateFAdd(valorElemento1, valorElemento2);
+        cierraFunción(función, resultado);
+    }
+
     di(ColorConsola.cianclaro);
     di("-------------------------------");
     di("|  REPRESENTACIÓN INTERMEDIA  |");
@@ -270,6 +305,8 @@ int main(int argc, char** argv)
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloCreaEscribeLeeSerieReales   = jat->busca("creaEscribeLeeSerieReales");
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloPunteroVariableEntera       = jat->busca("punteroVariableEntera");
     llvm::Expected<llvm::JITEvaluatedSymbol> símboloPunteroVariableReal         = jat->busca("punteroVariableReal");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloCreaEscribeSerieEnterosLee  = jat->busca("creaEscribeSerieEnterosLee");
+    llvm::Expected<llvm::JITEvaluatedSymbol> símboloCreaEscribeSerieRealesLee  = jat->busca("creaEscribeSerieRealesLee");
 
     // Obtengo punteros a las funciones construidas
     int32_t (*pSumaLiteralesEnteros)()          = (int32_t  (*)()) ((intptr_t)(símboloSumaLiteralesEnteros->getAddress()));
@@ -286,6 +323,8 @@ int main(int argc, char** argv)
     double  (*pCreaEscribeLeeSerieReales)()     = (double   (*)()) ((intptr_t)(símboloCreaEscribeLeeSerieReales->getAddress()));
     int32_t (*pPunteroVariableEntera)()         = (int32_t  (*)()) ((intptr_t)(símboloPunteroVariableEntera->getAddress()));
     double  (*pPunteroVariableReal)()           = (double   (*)()) ((intptr_t)(símboloPunteroVariableReal->getAddress()));
+    int32_t (*pCreaEscribeSerieEnterosLee)()    = (int32_t  (*)()) ((intptr_t)(símboloCreaEscribeSerieEnterosLee->getAddress()));
+    double  (*pCreaEscribeSerieRealesLee)()     = (double   (*)()) ((intptr_t)(símboloCreaEscribeSerieRealesLee->getAddress()));
 
     // Ejecuto una a una todas las funciones:
 
@@ -412,6 +451,24 @@ int main(int argc, char** argv)
     printf("\t\t▶   ");
     printf(ColorConsola.amarilloclaro);
     printf("%f", pPunteroVariableReal());
+    printf(ColorConsola.predefinido);
+    printf("\n");
+
+    printf(ColorConsola.cianclaro);
+    printf("creaEscribeSerieEnterosLee()");
+    printf(ColorConsola.predefinido);
+    printf("\t▶   ");
+    printf(ColorConsola.amarilloclaro);
+    printf("%d", pCreaEscribeSerieEnterosLee());
+    printf(ColorConsola.predefinido);
+    printf("\n");
+
+    printf(ColorConsola.cianclaro);
+    printf("creaEscribeSerieRealesLee()");
+    printf(ColorConsola.predefinido);
+    printf("\t▶   ");
+    printf(ColorConsola.amarilloclaro);
+    printf("%f", pCreaEscribeSerieRealesLee());
     printf(ColorConsola.predefinido);
     printf("\n");
 
